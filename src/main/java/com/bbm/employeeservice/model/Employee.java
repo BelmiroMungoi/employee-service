@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -22,7 +21,7 @@ public class Employee {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private UUID employeeIdentifier;
+    private String employeeIdentifier;
 
     @Column(nullable = false)
     private String firstname;
