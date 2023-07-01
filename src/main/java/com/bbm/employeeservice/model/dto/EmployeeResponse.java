@@ -19,5 +19,6 @@ public class EmployeeResponse {
     private String lastname;
     private String email;
     private LocalDate birthdate;
+    private AddressResponse address;
     private Role role;
 }
