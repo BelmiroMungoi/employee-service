@@ -31,13 +31,13 @@ public class EmployeeSearchDao {
 
         // prepare WHERE clause
         Predicate firstnamePredicate = criteriaBuilder
-                .like(root.get("firstname"), "%" + firstname + "%");
+                .like(criteriaBuilder.lower(root.get("firstname")), "%" + firstname.toLowerCase() + "%");
         Predicate lastnamePredicate = criteriaBuilder
-                .like(root.get("lastname"), "%" + lastname + "%");
+                .like(criteriaBuilder.lower(root.get("lastname")), "%" + lastname.toLowerCase() + "%");
         Predicate emailPredicate = criteriaBuilder
-                .like(root.get("email"), "%" + email + "%");
+                .like(criteriaBuilder.lower(root.get("email")), "%" + email.toLowerCase() + "%");
         Predicate firstnameorLastnamePredicate = criteriaBuilder.or(
-                firstnamePredicate, lastnamePredicate, emailPredicate);
+                firstnamePredicate, lastnamePredicate);
 
         // query => SELECT * FROM employee WHERE firstname like '%an%' OR lastname like '%mk%'
         // AND email like '%ema%'
@@ -54,20 +54,20 @@ public class EmployeeSearchDao {
 
         Root<Employee> root = criteriaQuery.from(Employee.class);
         if (request.getFirstname() != null) {
-            Predicate firstnamePredicate = criteriaBuilder.like(root
-                    .get("firstname"), "%" + request.getFirstname() + "%");
+            Predicate firstnamePredicate = criteriaBuilder.like(criteriaBuilder.lower(
+                    root.get("firstname")), "%" + request.getFirstname().toLowerCase() + "%");
             predicates.add(firstnamePredicate);
         }
 
         if (request.getLastname() != null) {
-            Predicate lastnamePredicate = criteriaBuilder.like(root
-                    .get("lastname"), "%" + request.getLastname() + "%");
+            Predicate lastnamePredicate = criteriaBuilder.like(criteriaBuilder.lower(
+                    root.get("lastname")), "%" + request.getLastname().toLowerCase() + "%");
             predicates.add(lastnamePredicate);
         }
 
         if (request.getEmail() != null) {
-            Predicate emailPredicate = criteriaBuilder.like(root
-                    .get("email"),"%" + request.getEmail() + "%");
+            Predicate emailPredicate = criteriaBuilder.like(criteriaBuilder.lower(
+                    root.get("email")),"%" + request.getEmail().toLowerCase() + "%");
             predicates.add(emailPredicate);
         }
 
