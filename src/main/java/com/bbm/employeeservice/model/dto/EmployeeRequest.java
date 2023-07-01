@@ -18,6 +18,9 @@ public class EmployeeRequest {
     private String firstname;
     private String lastname;
     private String email;
+    private String houseNumber;
+    private String street;
+    private String zipCode;
     private LocalDate birthdate;
     private Role role;
 }
