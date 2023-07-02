@@ -1,6 +1,6 @@
 package com.bbm.employeeservice.controller;
 
-import com.bbm.employeeservice.model.Employee;
+import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.EmployeeRequest;
 import com.bbm.employeeservice.model.dto.EmployeeResponse;
 import com.bbm.employeeservice.model.dto.SearchRequest;
@@ -20,11 +20,9 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/")
-    public ResponseEntity<EmployeeResponse> createEmployee(@RequestBody EmployeeRequest employeeRequest) {
-        Employee employee = employeeService.createEmployee(employeeRequest);
-        var employeeResponse = employeeService.mapToEmployeeResponse(employee);
-
-        return new ResponseEntity<>(employeeResponse, HttpStatus.CREATED);
+    public ResponseEntity<AppResponse> createEmployee(@RequestBody EmployeeRequest employeeRequest) {
+        var employee = employeeService.createEmployee(employeeRequest);
+        return new ResponseEntity<>(employee, HttpStatus.CREATED);
     }
 
     @GetMapping("/")
@@ -49,10 +47,9 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> updateEmployee(
+    public ResponseEntity<AppResponse> updateEmployee(
             @RequestBody EmployeeRequest employeeRequest, @PathVariable Long id) {
-        Employee employee = employeeService.updateEmployee(id, employeeRequest);
-        var employeeResponse = employeeService.mapToEmployeeResponse(employee);
+        var employeeResponse = employeeService.updateEmployee(id, employeeRequest);
 
         return new ResponseEntity<>(employeeResponse, HttpStatus.OK);
     }
