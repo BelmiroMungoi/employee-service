@@ -21,6 +21,7 @@ public class EmployeeRequest {
     private String houseNumber;
     private String street;
     private String zipCode;
+    private String department;
     private LocalDate birthdate;
     private Role role;
 }

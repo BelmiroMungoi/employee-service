@@ -20,5 +20,6 @@ public class EmployeeResponse {
     private String email;
     private LocalDate birthdate;
     private AddressResponse address;
+    private DepartmentResponse department;
     private Role role;
 }
