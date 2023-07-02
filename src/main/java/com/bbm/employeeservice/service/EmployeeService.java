@@ -3,12 +3,10 @@ package com.bbm.employeeservice.service;
 import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.Address;
+import com.bbm.employeeservice.model.Department;
 import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.Role;
-import com.bbm.employeeservice.model.dto.AddressResponse;
-import com.bbm.employeeservice.model.dto.EmployeeRequest;
-import com.bbm.employeeservice.model.dto.EmployeeResponse;
-import com.bbm.employeeservice.model.dto.SearchRequest;
+import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.EmployeeSearchDao;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +21,15 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeSearchDao employeeSearch;
+    private final DepartmentService departmentService;
     private final AddressService addressService;
 
-    public Employee createEmployee(EmployeeRequest employeeRequest) {
+    public AppResponse createEmployee(EmployeeRequest employeeRequest) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
             throw new BusinessException("Já existe um funcionário registrado com esse Email");
         }
         Address saveAddress = addressService.saveAddress(employeeRequest);
+        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
 
         Employee employee = Employee.builder()
                 .employeeIdentifier(UUID.randomUUID().toString())
@@ -38,10 +38,16 @@ public class EmployeeService {
                 .email(employeeRequest.getEmail())
                 .birthdate(employeeRequest.getBirthdate())
                 .address(saveAddress)
+                .department(getDepartment)
                 .role(Role.USER)
                 .build();
+        employeeRepository.save(employee);
 
-        return employeeRepository.save(employee);
+        return AppResponse.builder()
+                .responseCode("201")
+                .responseMessage("Funcionário foi Salvo com Sucesso")
+                .name(employee.getFirstname() + " " + employee.getLastname())
+                .build();
     }
 
     public List<EmployeeResponse> getEmployees() {
@@ -55,17 +61,24 @@ public class EmployeeService {
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
-    public Employee updateEmployee(Long employeeId, EmployeeRequest employeeRequest) {
-        Address saveAddress = addressService.saveAddress(employeeRequest);
+    public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest) {
+        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
 
         Employee employee = getEmployeeById(employeeId);
+        Address updateAddress = addressService.updateAddress(employee.getAddress().getId(), employeeRequest);
         employee.setFirstname(employeeRequest.getFirstname());
         employee.setLastname(employeeRequest.getLastname());
         employee.setEmail(employeeRequest.getEmail());
         employee.setBirthdate(employeeRequest.getBirthdate());
-        employee.setAddress(saveAddress);
+        employee.setAddress(updateAddress);
+        employee.setDepartment(getDepartment);
+        employeeRepository.save(employee);
 
-        return employeeRepository.save(employee);
+        return AppResponse.builder()
+                .responseCode("200")
+                .responseMessage("Funcionário foi actualizado com sucesso")
+                .name(employee.getFirstname() + " " + employee.getLastname())
+                .build();
     }
 
     public void deleteEmployee(Long employeeId) {
@@ -96,6 +109,10 @@ public class EmployeeService {
                         .houseNumber(employee.getAddress().getHouseNumber())
                         .street(employee.getAddress().getStreet())
                         .zipCode(employee.getAddress().getZipCode())
+                        .build())
+                .department(DepartmentResponse.builder()
+                        .id(employee.getDepartment().getId())
+                        .name(employee.getDepartment().getName())
                         .build())
                 .role(employee.getRole())
                 .build();
