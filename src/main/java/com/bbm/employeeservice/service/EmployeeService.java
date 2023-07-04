@@ -2,10 +2,7 @@ package com.bbm.employeeservice.service;
 
 import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
-import com.bbm.employeeservice.model.Address;
-import com.bbm.employeeservice.model.Department;
-import com.bbm.employeeservice.model.Employee;
-import com.bbm.employeeservice.model.Role;
+import com.bbm.employeeservice.model.*;
 import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.EmployeeSearchDao;
@@ -13,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -23,6 +21,7 @@ public class EmployeeService {
     private final EmployeeSearchDao employeeSearch;
     private final DepartmentService departmentService;
     private final AddressService addressService;
+    private final MissionService missionService;
 
     public AppResponse createEmployee(EmployeeRequest employeeRequest) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
@@ -61,8 +60,14 @@ public class EmployeeService {
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
+    public Set<Employee> getEmployeeByFirstname(String firstname) {
+        return employeeRepository.findAllByFirstname(firstname).orElseThrow(() ->
+                new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
+    }
+
     public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest) {
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
+        Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission());
 
         Employee employee = getEmployeeById(employeeId);
         Address updateAddress = addressService.updateAddress(employee.getAddress().getId(), employeeRequest);
@@ -72,6 +77,7 @@ public class EmployeeService {
         employee.setBirthdate(employeeRequest.getBirthdate());
         employee.setAddress(updateAddress);
         employee.setDepartment(getDepartment);
+        employee.setMissions(getMission);
         employeeRepository.save(employee);
 
         return AppResponse.builder()
