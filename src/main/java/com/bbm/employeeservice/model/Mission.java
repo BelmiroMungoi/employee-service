@@ -1,11 +1,17 @@
 package com.bbm.employeeservice.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Mission {
 
@@ -20,5 +26,5 @@ public class Mission {
     private int duration;
 
     @ManyToMany(mappedBy = "missions")
-    private List<Employee> employees;
+    private Set<Employee> employees;
 }
