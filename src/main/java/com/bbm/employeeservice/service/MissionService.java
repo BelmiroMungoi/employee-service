@@ -4,10 +4,12 @@ import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.Mission;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
+import com.bbm.employeeservice.model.dto.MissionResponse;
 import com.bbm.employeeservice.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -41,6 +43,11 @@ public class MissionService {
                 new EntityNotFoundException("Missão com  nome: " + mission + "não foi encontrada"));
     }
 
+    public List<MissionResponse> getAllMission() {
+        List<Mission> mission = missionRepository.findAll();
+        return mission.stream().map(this::mapToMissionResponse).toList();
+    }
+
     public AppResponse updateMission(Long id, MissionRequest request) {
         Mission mission = getMissionById(id);
         mission.setMissionName(request.getMissionName());
@@ -51,6 +58,19 @@ public class MissionService {
                 .responseCode("200")
                 .responseMessage("Missão foi actualizada com sucesso")
                 .name(mission.getMissionName())
+                .build();
+    }
+
+    public void deleteMission(Long id) {
+        Mission mission = getMissionById(id);
+        missionRepository.delete(mission);
+    }
+
+    private MissionResponse mapToMissionResponse(Mission mission) {
+        return MissionResponse.builder()
+                .id(mission.getId())
+                .missionName(mission.getMissionName())
+                .missionDuration(mission.getDuration())
                 .build();
     }
 }
