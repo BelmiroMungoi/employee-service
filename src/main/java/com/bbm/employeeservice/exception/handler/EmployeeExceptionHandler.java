@@ -2,6 +2,7 @@ package com.bbm.employeeservice.exception.handler;
 
 import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,11 +25,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
     @Override
+    @ExceptionHandler({Exception.class, RuntimeException.class, Throwable.class})
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+        HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        List<ErrorResponse.Campo> campos = new ArrayList<>();
+
+        for (ObjectError objectError : ((MethodArgumentNotValidException) ex).getBindingResult().getAllErrors()) {
+            String name = ((FieldError) objectError).getField();
+
+            String msg = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+            campos.add(new ErrorResponse.Campo(name, msg));
+        }
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(status.value() + " ==> " + status.getReasonPhrase());
+        errorResponse.setTitle("Um ou mais campos estão inválidos! Preencha devidamente o formulário e TENTE NOVAMENTE!!");
+        errorResponse.setTime(OffsetDateTime.now());
+        errorResponse.setCampos(campos);
+        return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
+    }
+
+   /* @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
@@ -47,7 +71,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setTime(OffsetDateTime.now());
         errorResponse.setCampos(campos);
         return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
-    }
+    }*/
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Object> handleBusinessException(BusinessException ex, WebRequest request) {
@@ -63,7 +87,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request){
+    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.NOT_FOUND;
 
@@ -75,7 +99,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, response, new HttpHeaders(), status, request);
     }
 
-    @ExceptionHandler({ DataIntegrityViolationException.class, ConstraintViolationException.class, SQLException.class })
+    @ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class, SQLException.class})
     protected ResponseEntity<Object> handleExceptionDataIntegrity(Exception ex) {
 
         String msg = "";
