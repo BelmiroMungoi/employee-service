@@ -5,6 +5,7 @@ import com.bbm.employeeservice.model.dto.EmployeeRequest;
 import com.bbm.employeeservice.model.dto.EmployeeResponse;
 import com.bbm.employeeservice.model.dto.SearchRequest;
 import com.bbm.employeeservice.service.EmployeeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/")
-    public ResponseEntity<AppResponse> createEmployee(@RequestBody EmployeeRequest employeeRequest) {
+    public ResponseEntity<AppResponse> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest) {
         var employee = employeeService.createEmployee(employeeRequest);
         return new ResponseEntity<>(employee, HttpStatus.CREATED);
     }
@@ -47,7 +48,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppResponse> updateEmployee(
+    public ResponseEntity<AppResponse> updateEmployee(@Valid
             @RequestBody EmployeeRequest employeeRequest, @PathVariable Long id) {
         var employeeResponse = employeeService.updateEmployee(id, employeeRequest);
 
