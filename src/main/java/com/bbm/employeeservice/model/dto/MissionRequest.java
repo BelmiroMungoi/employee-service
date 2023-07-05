@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MissionRequest {
 
+    @NotBlank
     private String missionName;
+
+    @NotBlank
     private int missionDuration;
     private String firstname;
 }
