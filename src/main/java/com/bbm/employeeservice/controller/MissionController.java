@@ -4,6 +4,7 @@ import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
 import com.bbm.employeeservice.model.dto.MissionResponse;
 import com.bbm.employeeservice.service.MissionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class MissionController {
     private final MissionService missionService;
 
     @PostMapping("/")
-    public ResponseEntity<AppResponse> createMission(@RequestBody MissionRequest request) {
+    public ResponseEntity<AppResponse> createMission(@Valid @RequestBody MissionRequest request) {
         var mission = missionService.createMission(request);
         return new ResponseEntity<>(mission, HttpStatus.CREATED);
     }
@@ -31,7 +32,7 @@ public class MissionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppResponse> updateMission(@PathVariable Long id, @RequestBody MissionRequest request) {
+    public ResponseEntity<AppResponse> updateMission(@PathVariable Long id, @Valid @RequestBody MissionRequest request) {
         var mission = missionService.updateMission(id, request);
         return new ResponseEntity<>(mission, HttpStatus.OK);
     }

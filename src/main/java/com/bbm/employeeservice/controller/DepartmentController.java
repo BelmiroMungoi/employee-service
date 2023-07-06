@@ -4,6 +4,7 @@ import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.DepartmentRequest;
 import com.bbm.employeeservice.model.dto.DepartmentResponse;
 import com.bbm.employeeservice.service.DepartmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/")
-    public ResponseEntity<AppResponse> createDepartment(@RequestBody DepartmentRequest request) {
+    public ResponseEntity<AppResponse> createDepartment(@Valid @RequestBody DepartmentRequest request) {
         var department = departmentService.createDepartment(request);
         return new ResponseEntity<>(department, HttpStatus.CREATED);
     }
@@ -30,7 +31,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppResponse> updateDepartment(@PathVariable Long id, @RequestBody DepartmentRequest request) {
+    public ResponseEntity<AppResponse> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentRequest request) {
         var department = departmentService.updateDepartment(id, request);
         return new ResponseEntity<>(department, HttpStatus.OK);
     }
