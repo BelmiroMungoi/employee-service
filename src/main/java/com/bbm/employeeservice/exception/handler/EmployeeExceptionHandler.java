@@ -30,7 +30,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @Override
+    /*@Override
     @ExceptionHandler({Exception.class, RuntimeException.class, Throwable.class})
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
         HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
@@ -50,12 +50,13 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setTime(OffsetDateTime.now());
         errorResponse.setCampos(campos);
         return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
-    }
+    }*/
 
-   /* @Override
+   @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-            HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+            HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
 
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         List<ErrorResponse.Campo> campos = new ArrayList<>();
 
         for (ObjectError objectError: ex.getBindingResult().getAllErrors()) {
@@ -71,7 +72,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setTime(OffsetDateTime.now());
         errorResponse.setCampos(campos);
         return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
-    }*/
+    }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Object> handleBusinessException(BusinessException ex, WebRequest request) {
