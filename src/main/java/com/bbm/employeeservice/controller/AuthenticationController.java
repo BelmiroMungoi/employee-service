@@ -8,10 +8,7 @@ import com.bbm.employeeservice.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -30,5 +27,15 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticateRequest request) {
         var authentication = authenticationService.authenticate(request);
         return new ResponseEntity<>(authentication, HttpStatus.OK);
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<AppResponse> confirmUser(@RequestParam("token") String token) {
+        boolean isSuccess = authenticationService.verifyToken(token);
+        AppResponse response = AppResponse.builder()
+                .responseCode("200")
+                .responseMessage("A sua conta foi verificada com sucesso!!!")
+                .build();
+        return ResponseEntity.ok(response);
     }
 }
