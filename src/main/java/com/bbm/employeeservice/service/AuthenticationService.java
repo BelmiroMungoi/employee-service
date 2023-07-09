@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
@@ -45,6 +46,9 @@ public class AuthenticationService {
         var savedUser = userRepository.save(user);
         var token = jwtTokenService.generateToken(savedUser);
         saveUserToken(savedUser, token);
+
+        emailService.sendHtmlEmail(savedUser.getFirstname() + " " + savedUser.getLastname(),
+                savedUser.getEmail(), token);
 
         return AppResponse.builder()
                 .responseCode("201")
