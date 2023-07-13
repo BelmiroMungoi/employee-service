@@ -23,10 +23,11 @@ public class EmployeeService {
     private final AddressService addressService;
     private final MissionService missionService;
 
-    public AppResponse createEmployee(EmployeeRequest employeeRequest) {
+    public AppResponse createEmployee(EmployeeRequest employeeRequest, Long userId) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
             throw new BusinessException("Já existe um funcionário registrado com esse Email");
         }
+        User user = new User(userId);
         Address saveAddress = addressService.saveAddress(employeeRequest);
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
 
@@ -39,6 +40,7 @@ public class EmployeeService {
                 .address(saveAddress)
                 .department(getDepartment)
                 .role(Role.USER)
+                .user(user)
                 .build();
         employeeRepository.save(employee);
 
@@ -49,27 +51,33 @@ public class EmployeeService {
                 .build();
     }
 
-    public List<EmployeeResponse> getEmployees() {
-        List<Employee> employees = employeeRepository.findAll();
+    public List<EmployeeResponse> getEmployees(Long userId) {
+        List<Employee> employees = employeeRepository.findAllByUserId(userId);
 
         return employees.stream().map(this::mapToEmployeeResponse).toList();
     }
 
-    public Employee getEmployeeById(Long employeeId) {
-        return employeeRepository.findById(employeeId).orElseThrow(() ->
+    public Employee getEmployeeById(Long employeeId, Long userId) {
+        return employeeRepository.findByIdAndUserId(employeeId, userId).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
-    public Set<Employee> getEmployeeByFirstname(String firstname) {
-        return employeeRepository.findAllByFirstname(firstname).orElseThrow(() ->
+    public Set<Employee> getEmployeeByFirstname(String firstname, Long id) {
+        return employeeRepository.findAllByFirstnameAndUserId(firstname).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
     }
 
-    public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest) {
+    public List<EmployeeResponse> getAllEmployeesByDepartment(String departmentName, Long userId) {
+        List<Employee> employees = employeeRepository.findAllByDepartmentNameAndUserId(departmentName, userId);
+
+        return employees.stream().map(this::mapToEmployeeResponse).toList();
+    }
+
+    public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest, Long userId) {
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
         Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission());
 
-        Employee employee = getEmployeeById(employeeId);
+        Employee employee = getEmployeeById(employeeId, userId);
         Address updateAddress = addressService.updateAddress(employee.getAddress().getId(), employeeRequest);
         employee.setFirstname(employeeRequest.getFirstname());
         employee.setLastname(employeeRequest.getLastname());
@@ -87,8 +95,8 @@ public class EmployeeService {
                 .build();
     }
 
-    public void deleteEmployee(Long employeeId) {
-        Employee employee = getEmployeeById(employeeId);
+    public void deleteEmployee(Long employeeId, Long userId) {
+        Employee employee = getEmployeeById(employeeId, userId);
         employeeRepository.delete(employee);
     }
 
