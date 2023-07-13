@@ -34,6 +34,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<ConfirmationToken> tokens;
 
+    public User(Long id) {
+        this.id = id;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
