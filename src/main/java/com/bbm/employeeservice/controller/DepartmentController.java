@@ -30,6 +30,11 @@ public class DepartmentController {
         return ResponseEntity.ok(departmentService.getAllDepartments());
     }
 
+    @GetMapping("/{name}")
+    public ResponseEntity<List<DepartmentResponse>> getDepartmentByName(@PathVariable("name") String name) {
+        return ResponseEntity.ok(departmentService.getAllDepartmentByName(name));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AppResponse> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentRequest request) {
         var department = departmentService.updateDepartment(id, request);
