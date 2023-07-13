@@ -53,4 +53,8 @@ public class Employee {
             inverseJoinColumns = @JoinColumn(name = "mission_id")
     )
     private Set<Mission> missions;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
