@@ -34,6 +34,11 @@ public class DepartmentService {
         return departmentRepository.findByName(name);
     }
 
+    public List<DepartmentResponse> getAllDepartmentByName(String name) {
+        List<Department> departments = departmentRepository.findAllByNameLikeIgnoreCase(name);
+        return departments.stream().map(this::mapToDepartmentResponse).toList();
+    }
+
     public Department getDepartmentById(Long id) {
         return departmentRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Departamento com o ID: " + id + " não foi encontrado"));
