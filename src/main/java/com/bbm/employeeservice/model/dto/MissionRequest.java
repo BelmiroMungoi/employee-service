@@ -14,8 +14,6 @@ public class MissionRequest {
 
     @NotBlank
     private String missionName;
-
-    @NotBlank
     private int missionDuration;
     private String firstname;
 }
