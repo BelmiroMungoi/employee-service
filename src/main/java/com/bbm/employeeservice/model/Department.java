@@ -24,4 +24,8 @@ public class Department {
 
     @OneToMany(mappedBy = "department")
     private List<Employee> employees;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

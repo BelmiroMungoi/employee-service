@@ -27,4 +27,8 @@ public class Mission {
 
     @ManyToMany(mappedBy = "missions")
     private Set<Employee> employees;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
