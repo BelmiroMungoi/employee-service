@@ -10,7 +10,7 @@ import java.util.Set;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Boolean existsByEmail(String email);
-    Optional<Set<Employee>> findAllByFirstnameAndUserId(String firstname);
+    Optional<Set<Employee>> findAllByFirstnameAndUserId(String firstname, Long userId);
     Optional<Employee> findByIdAndUserId(Long employeeId, Long userId);
     List<Employee> findAllByUserId(Long userId);
     List<Employee> findAllByDepartmentNameAndUserId(String departmentName, Long userId);
