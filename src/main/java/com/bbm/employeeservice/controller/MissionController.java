@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.controller;
 
+import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
 import com.bbm.employeeservice.model.dto.MissionResponse;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,26 +22,28 @@ public class MissionController {
     private final MissionService missionService;
 
     @PostMapping("/")
-    public ResponseEntity<AppResponse> createMission(@Valid @RequestBody MissionRequest request) {
-        var mission = missionService.createMission(request);
+    public ResponseEntity<AppResponse> createMission(@Valid @RequestBody MissionRequest request,
+                                                     @AuthenticationPrincipal User authenticatedUser) {
+        var mission = missionService.createMission(request, authenticatedUser.getId());
         return new ResponseEntity<>(mission, HttpStatus.CREATED);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<MissionResponse>> getAllMission() {
-        List<MissionResponse> missions = missionService.getAllMission();
+    public ResponseEntity<List<MissionResponse>> getAllMission(@AuthenticationPrincipal User authenticatedUser) {
+        List<MissionResponse> missions = missionService.getAllMission(authenticatedUser.getId());
         return new ResponseEntity<>(missions, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppResponse> updateMission(@PathVariable Long id, @Valid @RequestBody MissionRequest request) {
-        var mission = missionService.updateMission(id, request);
+    public ResponseEntity<AppResponse> updateMission(@PathVariable Long id, @Valid @RequestBody MissionRequest request,
+                                                     @AuthenticationPrincipal User authenticatedUser) {
+        var mission = missionService.updateMission(id, request, authenticatedUser.getId());
         return new ResponseEntity<>(mission, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMission(@PathVariable Long id) {
-        missionService.deleteMission(id);
+    public ResponseEntity<String> deleteMission(@PathVariable Long id, @AuthenticationPrincipal User authenticatedUser) {
+        missionService.deleteMission(id, authenticatedUser.getId());
         return new ResponseEntity<>("Missão com o ID: " + id + " foi deletada", HttpStatus.OK);
     }
 }
