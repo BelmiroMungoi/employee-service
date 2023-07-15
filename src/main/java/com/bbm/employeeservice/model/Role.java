@@ -22,7 +22,8 @@ public enum Role {
                     ADMIN_CREATE,
                     ADMIN_READ,
                     ADMIN_UPDATE,
-                    ADMIN_DELETE
+                    ADMIN_DELETE,
+                    USER_READ
             )
     );
 
