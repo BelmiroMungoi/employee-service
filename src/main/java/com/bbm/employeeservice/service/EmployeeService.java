@@ -29,7 +29,7 @@ public class EmployeeService {
         }
         User user = new User(userId);
         Address saveAddress = addressService.saveAddress(employeeRequest);
-        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
+        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
 
         Employee employee = Employee.builder()
                 .employeeIdentifier(UUID.randomUUID().toString())
@@ -62,8 +62,8 @@ public class EmployeeService {
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
-    public Set<Employee> getEmployeeByFirstname(String firstname, Long id) {
-        return employeeRepository.findAllByFirstnameAndUserId(firstname).orElseThrow(() ->
+    public Set<Employee> getEmployeeByFirstname(String firstname, Long userId) {
+        return employeeRepository.findAllByFirstnameAndUserId(firstname, userId).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
     }
 
@@ -74,8 +74,8 @@ public class EmployeeService {
     }
 
     public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest, Long userId) {
-        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment());
-        Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission());
+        Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
+        Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission(), userId);
 
         Employee employee = getEmployeeById(employeeId, userId);
         Address updateAddress = addressService.updateAddress(employee.getAddress().getId(), employeeRequest);
