@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 @Data
 @Builder
@@ -32,6 +35,7 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @DateTimeFormat(iso = DATE, pattern = "dd/MM/yyyy")
     private LocalDate birthdate;
 
     @Enumerated(EnumType.STRING)

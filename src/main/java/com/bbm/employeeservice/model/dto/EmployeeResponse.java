@@ -1,6 +1,7 @@
 package com.bbm.employeeservice.model.dto;
 
 import com.bbm.employeeservice.model.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class EmployeeResponse {
     private String firstname;
     private String lastname;
     private String email;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
     private AddressResponse address;
     private DepartmentResponse department;
