@@ -1,7 +1,10 @@
 package com.bbm.employeeservice.service;
 
 import com.bbm.employeeservice.exception.BusinessException;
+import com.bbm.employeeservice.exception.EntityNotFoundException;
+import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.Image;
+import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.repository.ImageRepository;
 import com.bbm.employeeservice.utils.ImageUtils;
 import jakarta.transaction.Transactional;
@@ -14,9 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final EmployeeService employeeService;
 
-    public String upload(MultipartFile file) {
+    public String upload(MultipartFile file, Long userId, Long employeeId) {
+        User user = new User(userId);
         String contentType = file.getContentType();
+        Employee employee = null;
+        if (employeeId != null) {
+            employee = employeeService.getEmployeeById(employeeId, userId);
+        }
         boolean isAnImageFile = ImageUtils.isValidImageFile(contentType);
         if (isAnImageFile) {
             try {
@@ -25,6 +34,11 @@ public class ImageService {
                         .fileType(file.getContentType())
                         .image(file.getBytes())
                         .build();
+                if (employee != null) {
+                    image.setEmployee(employee);
+                } else {
+                    image.setUser(user);
+                }
                 imageRepository.save(image);
                 return "Imagem foi Carregada com Sucesso: " + file.getOriginalFilename();
             } catch (Exception e) {
@@ -38,7 +52,7 @@ public class ImageService {
     @Transactional
     public Image download(String fileName) {
         return imageRepository.findByOriginalFileName(fileName).orElseThrow(() ->
-                new BusinessException("Não foi possível fazer o download da imagem"));
+                new EntityNotFoundException("Não foi possível fazer o download da imagem!"));
     }
 
 }
