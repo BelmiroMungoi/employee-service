@@ -20,6 +20,8 @@ public class ConfirmationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String token;
+    private boolean revoked;
+    private boolean expired;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
