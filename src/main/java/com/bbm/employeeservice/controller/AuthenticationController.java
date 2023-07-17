@@ -5,10 +5,14 @@ import com.bbm.employeeservice.model.dto.AuthenticateRequest;
 import com.bbm.employeeservice.model.dto.AuthenticationResponse;
 import com.bbm.employeeservice.model.dto.RegisterRequest;
 import com.bbm.employeeservice.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -37,5 +41,10 @@ public class AuthenticationController {
                 .responseMessage("A sua conta foi verificada com sucesso!!!")
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        authenticationService.refreshToken(request, response);
     }
 }
