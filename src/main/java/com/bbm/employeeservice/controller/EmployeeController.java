@@ -83,7 +83,7 @@ public class EmployeeController {
     public ResponseEntity<String> downloadReport(HttpServletResponse response) throws IOException {
         byte[] pdf = reportService.generateReport(new HashMap<>());
        String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-       /* response.setContentLength(pdf.length);
+       /*response.setContentLength(pdf.length);
         response.setContentType("application/octet-stream");
         String header = "Content-Disposition";
         String headerValue = String.format("attachment; filename\"%s\"", "Relatório de Funcionários.pdf");
