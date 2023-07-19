@@ -35,14 +35,18 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((authorizationManager) -> authorizationManager
                         .requestMatchers("/api/v1/auth/**")
                         .permitAll()
-                                .requestMatchers("/api/v1/employee/**").hasAnyRole(ADMIN.name(), USER.name())
-                                .requestMatchers(POST, "/api/v1/employee/**").hasAuthority(ADMIN_CREATE.name())
-                                .requestMatchers(GET, "/api/v1/employee/**").hasAnyAuthority(ADMIN_READ.name(), USER_READ.name())
-                                .requestMatchers(PUT, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
-                                .anyRequest()
-                                .authenticated()
-                        )
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
+                        ).permitAll()
+                        .requestMatchers("/api/v1/employee/**").hasAnyRole(ADMIN.name(), USER.name())
+                        .requestMatchers(POST, "/api/v1/employee/**").hasAuthority(ADMIN_CREATE.name())
+                        .requestMatchers(GET, "/api/v1/employee/**").hasAnyAuthority(ADMIN_READ.name(), USER_READ.name())
+                        .requestMatchers(PUT, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
+                        .requestMatchers(DELETE, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
+                        .anyRequest()
+                        .authenticated()
+                )
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
