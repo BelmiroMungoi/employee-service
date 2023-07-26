@@ -13,6 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.bbm.employeeservice.model.Permission.*;
 import static com.bbm.employeeservice.model.Role.ADMIN;
@@ -32,6 +38,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors((corsConfigurer) -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorizationManager) -> authorizationManager
                         .requestMatchers("/api/v1/auth/**")
                         .permitAll()
@@ -43,7 +50,7 @@ public class SecurityConfiguration {
                         .requestMatchers(POST, "/api/v1/employee/**").hasAuthority(ADMIN_CREATE.name())
                         .requestMatchers(GET, "/api/v1/employee/**").hasAnyAuthority(ADMIN_READ.name(), USER_READ.name())
                         .requestMatchers(PUT, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
-                        .requestMatchers(DELETE, "/api/v1/employee/**").hasAuthority(ADMIN_UPDATE.name())
+                        .requestMatchers(DELETE, "/api/v1/employee/**").hasAuthority(ADMIN_DELETE.name())
                         .anyRequest()
                         .authenticated()
                 )
@@ -59,5 +66,19 @@ public class SecurityConfiguration {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "X-Get-Header", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+        configuration.setMaxAge(3600L);
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
