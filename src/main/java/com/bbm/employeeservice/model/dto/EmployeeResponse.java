@@ -16,10 +16,11 @@ import java.time.LocalDate;
 public class EmployeeResponse {
 
     private Long id;
+    private String employeeIdentifier;
     private String firstname;
     private String lastname;
     private String email;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthdate;
     private AddressResponse address;
     private DepartmentResponse department;
