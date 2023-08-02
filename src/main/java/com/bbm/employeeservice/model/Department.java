@@ -21,6 +21,8 @@ public class Department {
 
     @Column(nullable = false)
     private String name;
+    private String shortName;
+    private Integer employeeQuantity;
 
     @OneToMany(mappedBy = "department")
     private List<Employee> employees;
