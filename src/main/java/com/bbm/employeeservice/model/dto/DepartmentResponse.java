@@ -13,4 +13,6 @@ public class DepartmentResponse {
 
     private Long id;
     private String name;
+    private String shortName;
+    private Integer employeeQuantity;
 }
