@@ -4,6 +4,7 @@ import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.*;
 import com.bbm.employeeservice.model.dto.*;
+import com.bbm.employeeservice.repository.DepartmentRepository;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.EmployeeSearchDao;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final EmployeeSearchDao employeeSearch;
     private final DepartmentService departmentService;
     private final AddressService addressService;
@@ -30,6 +32,7 @@ public class EmployeeService {
         User user = new User(userId);
         Address saveAddress = addressService.saveAddress(employeeRequest);
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
+        getDepartment.setEmployeeQuantity(getDepartment.getEmployeeQuantity() + 1);
 
         Employee employee = Employee.builder()
                 .employeeIdentifier(UUID.randomUUID().toString())
@@ -62,9 +65,10 @@ public class EmployeeService {
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
-    public Set<Employee> getEmployeeByFirstname(String firstname, Long userId) {
-        return employeeRepository.findAllByFirstnameAndUserId(firstname, userId).orElseThrow(() ->
+    public List<EmployeeResponse> getEmployeeByFirstname(String firstname, Long userId) {
+        List<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(firstname, userId).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
+        return employees.stream().map(this::mapToEmployeeResponse).toList();
     }
 
     public List<EmployeeResponse> getAllEmployeesByDepartment(String departmentName, Long userId) {
@@ -75,9 +79,12 @@ public class EmployeeService {
 
     public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest, Long userId) {
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
+        getDepartment.setEmployeeQuantity(getDepartment.getEmployeeQuantity() + 1);
         Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission(), userId);
 
         Employee employee = getEmployeeById(employeeId, userId);
+        employee.getDepartment().setEmployeeQuantity(employee.getDepartment().getEmployeeQuantity() - 1);
+        departmentRepository.save(employee.getDepartment());
         Address updateAddress = addressService.updateAddress(employee.getAddress().getId(), employeeRequest);
         employee.setFirstname(employeeRequest.getFirstname());
         employee.setLastname(employeeRequest.getLastname());
@@ -115,6 +122,7 @@ public class EmployeeService {
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
         return EmployeeResponse.builder()
                 .id(employee.getId())
+                .employeeIdentifier(employee.getEmployeeIdentifier())
                 .firstname(employee.getFirstname())
                 .lastname(employee.getLastname())
                 .email(employee.getEmail())
@@ -127,6 +135,7 @@ public class EmployeeService {
                 .department(DepartmentResponse.builder()
                         .id(employee.getDepartment().getId())
                         .name(employee.getDepartment().getName())
+                        .shortName(employee.getDepartment().getShortName())
                         .build())
                 .role(employee.getRole())
                 .build();
