@@ -14,4 +14,5 @@ public class DepartmentRequest {
 
     @NotBlank
     private String name;
+    private String shortName;
 }
