@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.controller;
 
+import com.bbm.employeeservice.model.Department;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.DepartmentRequest;
@@ -37,6 +38,13 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentResponse>> getDepartmentByName(@PathVariable("name") String name,
                                                                         @AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(departmentService.getAllDepartmentByName(name, authenticatedUser.getId()));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable("id") Long id,
+                                                                @AuthenticationPrincipal User authenticatedUser){
+        Department department = departmentService.getDepartmentById(id, authenticatedUser.getId());
+        return ResponseEntity.ok(departmentService.mapToDepartmentResponse(department));
     }
 
     @PutMapping("/{id}")
