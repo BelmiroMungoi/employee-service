@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.controller;
 
+import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.EmployeeRequest;
@@ -49,6 +50,12 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable("id") Long id, @AuthenticationPrincipal User authenticatedUser) {
+        Employee employee = employeeService.getEmployeeById(id, authenticatedUser.getId());
+        return ResponseEntity.ok(employeeService.mapToEmployeeResponse(employee));
+    }
+
     @GetMapping
     public ResponseEntity<List<EmployeeResponse>> searchAllEmployees(
             @RequestParam String firstname, @RequestParam String lastname, @RequestParam String email) {
@@ -57,7 +64,15 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<EmployeeResponse>> getAllEmployeeByFirstname(@PathVariable("name") String name,
+                                                                           @AuthenticationPrincipal User authenticatedUser) {
+        List<EmployeeResponse> employees = employeeService
+                .getEmployeeByFirstname(name, authenticatedUser.getId());
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
     public ResponseEntity<List<EmployeeResponse>> searchAllEmployeesByName(@RequestBody SearchRequest request) {
         List<EmployeeResponse> employees = employeeService.searchAllEmployeesByName(request);
 
