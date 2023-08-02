@@ -22,6 +22,7 @@ public class DepartmentService {
         User user = new User(userId);
         Department department = Department.builder()
                 .name(request.getName())
+                .shortName(request.getShortName())
                 .user(user)
                 .build();
         departmentRepository.save(department);
@@ -49,12 +50,14 @@ public class DepartmentService {
 
     public List<DepartmentResponse> getAllDepartments(Long userId) {
         List<Department> departments = departmentRepository.findAllByUserId(userId);
+
         return departments.stream().map(this::mapToDepartmentResponse).toList();
     }
 
     public AppResponse updateDepartment(Long id, DepartmentRequest request, Long userId) {
         Department department = getDepartmentById(id, userId);
         department.setName(request.getName());
+        department.setShortName(request.getShortName());
         departmentRepository.save(department);
 
         return AppResponse.builder()
@@ -69,10 +72,12 @@ public class DepartmentService {
         departmentRepository.delete(department);
     }
 
-    private DepartmentResponse mapToDepartmentResponse(Department department) {
+    public DepartmentResponse mapToDepartmentResponse(Department department) {
         return DepartmentResponse.builder()
                 .id(department.getId())
                 .name(department.getName())
+                .shortName(department.getShortName())
+                .employeeQuantity(department.getEmployeeQuantity())
                 .build();
     }
 
