@@ -6,10 +6,7 @@ import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.ConfirmationToken;
 import com.bbm.employeeservice.model.Role;
 import com.bbm.employeeservice.model.User;
-import com.bbm.employeeservice.model.dto.AppResponse;
-import com.bbm.employeeservice.model.dto.AuthenticateRequest;
-import com.bbm.employeeservice.model.dto.AuthenticationResponse;
-import com.bbm.employeeservice.model.dto.RegisterRequest;
+import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.ConfirmationTokenRepository;
 import com.bbm.employeeservice.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,6 +84,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(token)
                 .refreshToken(refreshToken)
+                .user(maptoUserResponse(user))
                 .build();
     }
 
@@ -137,5 +135,15 @@ public class AuthenticationService {
             token.setRevoked(true);
         });
         tokenRepository.saveAll(validTokens);
+    }
+
+    private UserResponse maptoUserResponse(User user) {
+        return UserResponse.builder()
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .email(user.getEmail())
+                .isEnabled(user.isEnabled())
+                .role(user.getRole())
+                .build();
     }
 }
