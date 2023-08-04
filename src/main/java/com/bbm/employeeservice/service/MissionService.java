@@ -2,6 +2,7 @@ package com.bbm.employeeservice.service;
 
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.Mission;
+import com.bbm.employeeservice.model.MissionStatus;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
@@ -23,7 +24,8 @@ public class MissionService {
         User user = new User(userId);
         Mission mission = Mission.builder()
                 .missionName(request.getMissionName())
-                .duration(request.getMissionDuration())
+                .missionStatus(MissionStatus.ABERTO)
+                .finishedAt(request.getFinishedDate())
                 .employees(null)
                 .user(user)
                 .build();
@@ -54,7 +56,8 @@ public class MissionService {
     public AppResponse updateMission(Long id, MissionRequest request, Long userId) {
         Mission mission = getMissionById(id, userId);
         mission.setMissionName(request.getMissionName());
-        mission.setDuration(request.getMissionDuration());
+        mission.setMissionStatus(request.getMissionStatus());
+        mission.setFinishedAt(request.getFinishedDate());
         missionRepository.save(mission);
 
         return AppResponse.builder()
@@ -73,7 +76,9 @@ public class MissionService {
         return MissionResponse.builder()
                 .id(mission.getId())
                 .missionName(mission.getMissionName())
-                .missionDuration(mission.getDuration())
+                .startedDate(mission.getStartedAt())
+                .finishedDate(mission.getFinishedAt())
+                .missionStatus(mission.getMissionStatus().getName())
                 .build();
     }
 }
