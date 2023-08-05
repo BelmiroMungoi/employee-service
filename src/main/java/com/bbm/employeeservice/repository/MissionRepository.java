@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
-    Optional<Set<Mission>> findAllByMissionNameAndUserId(String missionName, Long userId);
+    Optional<Set<Mission>> findAllByMissionNameContainsIgnoreCaseAndUserId(String missionName, Long userId);
     Optional<Mission> findByIdAndUserId(Long id, Long userID);
     List<Mission> findAllByUserId(Long userId);
 }
