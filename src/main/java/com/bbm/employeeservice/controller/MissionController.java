@@ -4,6 +4,7 @@ import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
 import com.bbm.employeeservice.model.dto.MissionResponse;
+import com.bbm.employeeservice.model.dto.StatusResponse;
 import com.bbm.employeeservice.service.MissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,11 @@ public class MissionController {
     public ResponseEntity<List<MissionResponse>> getAllMission(@AuthenticationPrincipal User authenticatedUser) {
         List<MissionResponse> missions = missionService.getAllMission(authenticatedUser.getId());
         return new ResponseEntity<>(missions, HttpStatus.OK);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<StatusResponse>> getAllStatus() {
+        return ResponseEntity.ok(missionService.getAllStatus());
     }
 
     @PutMapping("/{id}")
