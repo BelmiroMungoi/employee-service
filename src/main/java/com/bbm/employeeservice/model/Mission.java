@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -27,17 +27,14 @@ public class Mission {
     @Column(nullable = false)
     private String missionName;
 
-    @CreatedDate
-    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(iso = DATE, pattern = "dd/MM/yyyy hh:mm:ss a")
     private LocalDateTime startedAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(iso = DATE, pattern = "dd/MM/yyyy")
-    private LocalDateTime finishedAt;
+    private LocalDate finishedAt;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private MissionStatus missionStatus;
 
     @ManyToMany(mappedBy = "missions")
