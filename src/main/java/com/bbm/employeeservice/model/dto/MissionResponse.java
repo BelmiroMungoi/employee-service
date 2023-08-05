@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,6 +20,6 @@ public class MissionResponse {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime startedDate;
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDateTime finishedDate;
-    private String missionStatus;
+    private LocalDate finishedDate;
+    private StatusResponse missionStatus;
 }
