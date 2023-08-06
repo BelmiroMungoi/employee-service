@@ -50,8 +50,14 @@ public class MissionService {
     }
 
     public Set<Mission> getMissionByName(String mission, Long userId) {
-        return missionRepository.findAllByMissionNameContainsIgnoreCaseAndUserId(mission, userId).orElseThrow(() ->
+        return missionRepository.findByMissionNameAndUserId(mission, userId).orElseThrow(() ->
                 new EntityNotFoundException("Missão com  nome: " + mission + "não foi encontrada"));
+    }
+
+    public List<MissionResponse> getAllMissionByName(String mission, Long userId) {
+        List<Mission> missions = missionRepository.findAllByMissionNameContainsIgnoreCaseAndUserId(mission, userId).orElseThrow(() ->
+                new EntityNotFoundException("Missão com  nome: " + mission + "não foi encontrada"));
+        return missions.stream().map(this::mapToMissionResponse).toList();
     }
 
     public List<MissionResponse> getAllMission(Long userId) {
@@ -84,7 +90,7 @@ public class MissionService {
         missionRepository.delete(mission);
     }
 
-    private MissionResponse mapToMissionResponse(Mission mission) {
+    public MissionResponse mapToMissionResponse(Mission mission) {
         return MissionResponse.builder()
                 .id(mission.getId())
                 .missionName(mission.getMissionName())
