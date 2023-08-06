@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.controller;
 
+import com.bbm.employeeservice.model.Mission;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
@@ -33,6 +34,19 @@ public class MissionController {
     public ResponseEntity<List<MissionResponse>> getAllMission(@AuthenticationPrincipal User authenticatedUser) {
         List<MissionResponse> missions = missionService.getAllMission(authenticatedUser.getId());
         return new ResponseEntity<>(missions, HttpStatus.OK);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<MissionResponse>> getAllMissionByName(@PathVariable("name") String name,
+                                                                    @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.getAllMissionByName(name, authenticatedUser.getId()));
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<MissionResponse> getMissionById(@PathVariable("id") Long id,
+                                                               @AuthenticationPrincipal User authenticatedUser){
+        Mission mission = missionService.getMissionById(id, authenticatedUser.getId());
+        return ResponseEntity.ok(missionService.mapToMissionResponse(mission));
     }
 
     @GetMapping("/status")
