@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,8 +38,15 @@ public class EmployeeController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<EmployeeResponse>> getAllEmployees(@AuthenticationPrincipal User authenticatedUser) {
-        List<EmployeeResponse> employees = employeeService.getEmployees(authenticatedUser.getId());
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(@AuthenticationPrincipal User authenticatedUser) {
+        Page<EmployeeResponse> employees = employeeService.getEmployees(authenticatedUser.getId());
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+    @GetMapping("/page/{page}")
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployeesPerPage(@PathVariable("page") int page,
+                                                                             @AuthenticationPrincipal User authenticatedUser) {
+        Page<EmployeeResponse> employees = employeeService.getEmployeesPerPage(page, authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
@@ -65,9 +73,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<EmployeeResponse>> getAllEmployeeByFirstname(@PathVariable("name") String name,
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstname(@PathVariable("name") String name,
                                                                            @AuthenticationPrincipal User authenticatedUser) {
-        List<EmployeeResponse> employees = employeeService
+        Page<EmployeeResponse> employees = employeeService
                 .getEmployeeByFirstname(name, authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }

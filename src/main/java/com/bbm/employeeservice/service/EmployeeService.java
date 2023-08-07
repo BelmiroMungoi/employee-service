@@ -8,6 +8,9 @@ import com.bbm.employeeservice.repository.DepartmentRepository;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.EmployeeSearchDao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,10 +57,18 @@ public class EmployeeService {
                 .build();
     }
 
-    public List<EmployeeResponse> getEmployees(Long userId) {
-        List<Employee> employees = employeeRepository.findAllByUserId(userId);
+    public Page<EmployeeResponse> getEmployees(Long userId) {
+        PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllByUserId(pageRequest, userId);
 
-        return employees.stream().map(this::mapToEmployeeResponse).toList();
+        return employees.map(this::mapToEmployeeResponse);
+    }
+
+    public Page<EmployeeResponse> getEmployeesPerPage(int page, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllByUserId(pageRequest, userId);
+
+        return employees.map(this::mapToEmployeeResponse);
     }
 
     public Employee getEmployeeById(Long employeeId, Long userId) {
@@ -65,10 +76,11 @@ public class EmployeeService {
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
-    public List<EmployeeResponse> getEmployeeByFirstname(String firstname, Long userId) {
-        List<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(firstname, userId).orElseThrow(() ->
+    public Page<EmployeeResponse> getEmployeeByFirstname(String firstname, Long userId) {
+        PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(pageRequest, firstname, userId).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
-        return employees.stream().map(this::mapToEmployeeResponse).toList();
+        return employees.map(this::mapToEmployeeResponse);
     }
 
     public List<EmployeeResponse> getAllEmployeesByDepartment(String departmentName, Long userId) {
