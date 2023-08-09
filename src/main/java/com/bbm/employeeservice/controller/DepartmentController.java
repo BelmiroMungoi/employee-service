@@ -8,6 +8,7 @@ import com.bbm.employeeservice.model.dto.DepartmentResponse;
 import com.bbm.employeeservice.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,11 +34,17 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentResponse>> getAllDepartment(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(departmentService.getAllDepartments(authenticatedUser.getId()));
     }
+    @GetMapping("/page/{page}")
+    public ResponseEntity<Page<DepartmentResponse>> getAllDepartment(@PathVariable("page") int page,
+                                                                     @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(departmentService.getAllDepartments(page, authenticatedUser.getId()));
+    }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<List<DepartmentResponse>> getDepartmentByName(@PathVariable("name") String name,
+    @GetMapping("/{name}/page/{page}")
+    public ResponseEntity<Page<DepartmentResponse>> getDepartmentByName(@PathVariable("name") String name,
+                                                                        @PathVariable("page") int page,
                                                                         @AuthenticationPrincipal User authenticatedUser) {
-        return ResponseEntity.ok(departmentService.getAllDepartmentByName(name, authenticatedUser.getId()));
+        return ResponseEntity.ok(departmentService.getAllDepartmentByName(page, name, authenticatedUser.getId()));
     }
 
     @GetMapping("/id/{id}")

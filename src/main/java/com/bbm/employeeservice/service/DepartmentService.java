@@ -8,6 +8,9 @@ import com.bbm.employeeservice.model.dto.DepartmentRequest;
 import com.bbm.employeeservice.model.dto.DepartmentResponse;
 import com.bbm.employeeservice.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,7 @@ public class DepartmentService {
         Department department = Department.builder()
                 .name(request.getName())
                 .shortName(request.getShortName())
+                .employeeQuantity(0)
                 .user(user)
                 .build();
         departmentRepository.save(department);
@@ -38,14 +42,22 @@ public class DepartmentService {
         return departmentRepository.findByNameAndUserId(name, userId);
     }
 
-    public List<DepartmentResponse> getAllDepartmentByName(String name, Long userId) {
-        List<Department> departments = departmentRepository.findAllByNameContainsIgnoreCaseAndUserId(name, userId);
-        return departments.stream().map(this::mapToDepartmentResponse).toList();
+    public Page<DepartmentResponse> getAllDepartmentByName(int page, String name, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Department> departments = departmentRepository.findAllByNameContainsIgnoreCaseAndUserId(pageRequest, name, userId);
+        return departments.map(this::mapToDepartmentResponse);
     }
 
     public Department getDepartmentById(Long id, Long userId) {
         return departmentRepository.findByIdAndUserId(id, userId).orElseThrow(() ->
                 new EntityNotFoundException("Departamento com o ID: " + id + " não foi encontrado"));
+    }
+
+    public Page<DepartmentResponse> getAllDepartments(int page, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Department> departments = departmentRepository.findAllByUserId(pageRequest, userId);
+
+        return departments.map(this::mapToDepartmentResponse);
     }
 
     public List<DepartmentResponse> getAllDepartments(Long userId) {
