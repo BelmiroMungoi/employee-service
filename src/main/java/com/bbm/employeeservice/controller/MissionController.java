@@ -9,6 +9,7 @@ import com.bbm.employeeservice.model.dto.StatusResponse;
 import com.bbm.employeeservice.service.MissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,16 +31,18 @@ public class MissionController {
         return new ResponseEntity<>(mission, HttpStatus.CREATED);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<MissionResponse>> getAllMission(@AuthenticationPrincipal User authenticatedUser) {
-        List<MissionResponse> missions = missionService.getAllMission(authenticatedUser.getId());
+    @GetMapping("/page/{page}")
+    public ResponseEntity<Page<MissionResponse>> getAllMission(@PathVariable("page") int page,
+                                                               @AuthenticationPrincipal User authenticatedUser) {
+        Page<MissionResponse> missions = missionService.getAllMission(page, authenticatedUser.getId());
         return new ResponseEntity<>(missions, HttpStatus.OK);
     }
 
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<MissionResponse>> getAllMissionByName(@PathVariable("name") String name,
-                                                                    @AuthenticationPrincipal User authenticatedUser) {
-        return ResponseEntity.ok(missionService.getAllMissionByName(name, authenticatedUser.getId()));
+    @GetMapping("/name/{name}/page/{page}")
+    public ResponseEntity<Page<MissionResponse>> getAllMissionByName(@PathVariable("name") String name,
+                                                                     @PathVariable("page") int page,
+                                                                     @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.getAllMissionByName(page, name, authenticatedUser.getId()));
     }
 
     @GetMapping("/get/{id}")

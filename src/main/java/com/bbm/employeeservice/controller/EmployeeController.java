@@ -80,6 +80,15 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    @GetMapping("/name/{name}/page/{page}")
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstnamePerPage(@PathVariable("name") String name,
+                                                                            @PathVariable("page") int page,
+                                                                            @AuthenticationPrincipal User authenticatedUser) {
+        Page<EmployeeResponse> employees = employeeService
+                .getEmployeeByFirstnamePerPage(page, name, authenticatedUser.getId());
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<EmployeeResponse>> searchAllEmployeesByName(@RequestBody SearchRequest request) {
         List<EmployeeResponse> employees = employeeService.searchAllEmployeesByName(request);

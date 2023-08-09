@@ -11,6 +11,9 @@ import com.bbm.employeeservice.model.dto.StatusResponse;
 import com.bbm.employeeservice.repository.MissionRepository;
 import com.bbm.employeeservice.repository.MissionStatusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -54,15 +57,17 @@ public class MissionService {
                 new EntityNotFoundException("Missão com  nome: " + mission + "não foi encontrada"));
     }
 
-    public List<MissionResponse> getAllMissionByName(String mission, Long userId) {
-        List<Mission> missions = missionRepository.findAllByMissionNameContainsIgnoreCaseAndUserId(mission, userId).orElseThrow(() ->
+    public Page<MissionResponse> getAllMissionByName(int page, String mission, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Mission> missions = missionRepository.findAllByMissionNameContainsIgnoreCaseAndUserId(pageRequest, mission, userId).orElseThrow(() ->
                 new EntityNotFoundException("Missão com  nome: " + mission + "não foi encontrada"));
-        return missions.stream().map(this::mapToMissionResponse).toList();
+        return missions.map(this::mapToMissionResponse);
     }
 
-    public List<MissionResponse> getAllMission(Long userId) {
-        List<Mission> mission = missionRepository.findAllByUserId(userId);
-        return mission.stream().map(this::mapToMissionResponse).toList();
+    public Page<MissionResponse> getAllMission(int page, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Mission> mission = missionRepository.findAllByUserId(pageRequest, userId);
+        return mission.map(this::mapToMissionResponse);
     }
 
     public List<StatusResponse> getAllStatus() {

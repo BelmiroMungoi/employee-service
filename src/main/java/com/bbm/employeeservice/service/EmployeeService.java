@@ -83,6 +83,13 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    public Page<EmployeeResponse> getEmployeeByFirstnamePerPage(int page, String firstname, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(pageRequest, firstname, userId).orElseThrow(() ->
+                new EntityNotFoundException("Funcionário com o nome: " + firstname + " não foi encontrado"));
+        return employees.map(this::mapToEmployeeResponse);
+    }
+
     public List<EmployeeResponse> getAllEmployeesByDepartment(String departmentName, Long userId) {
         List<Employee> employees = employeeRepository.findAllByDepartmentNameAndUserId(departmentName, userId);
 
