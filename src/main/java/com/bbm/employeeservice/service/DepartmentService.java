@@ -84,6 +84,10 @@ public class DepartmentService {
         departmentRepository.delete(department);
     }
 
+    public Integer getDepartmentQuantity(Long userId) {
+        return departmentRepository.countAllByUserId(userId);
+    }
+
     public DepartmentResponse mapToDepartmentResponse(Department department) {
         return DepartmentResponse.builder()
                 .id(department.getId())

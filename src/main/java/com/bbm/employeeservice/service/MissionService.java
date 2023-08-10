@@ -75,6 +75,10 @@ public class MissionService {
         return status.stream().map(this::mapToStatusResponse).toList();
     }
 
+    public Integer getMissionQuantityByUser(Long userId) {
+        return missionRepository.countMissionByUserId(userId);
+    }
+
     public AppResponse updateMission(Long id, MissionRequest request, Long userId) {
         MissionStatus status = missionStatusRepository.findByStatus(request.getMissionStatus());
         Mission mission = getMissionById(id, userId);

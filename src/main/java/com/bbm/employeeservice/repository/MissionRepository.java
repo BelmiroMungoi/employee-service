@@ -14,4 +14,5 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
     Optional<Set<Mission>> findByMissionNameAndUserId(String missionName, Long userId);
     Optional<Mission> findByIdAndUserId(Long id, Long userID);
     Page<Mission> findAllByUserId(PageRequest pageRequest, Long userId);
+    Integer countMissionByUserId(Long userId);
 }

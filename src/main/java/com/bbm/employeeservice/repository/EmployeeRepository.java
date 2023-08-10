@@ -15,7 +15,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByIdAndUserId(Long employeeId, Long userId);
     Page<Employee> findAllByUserId(PageRequest pageRequest, Long userId);
     List<Employee> findAllByDepartmentNameAndUserId(String departmentName, Long userId);
-    Integer countEmployeesByDepartmentNameContainsIgnoreCaseAndUserId(String department, Long userId);
+    Integer countAllByUserId(Long userId);
 
 
 }

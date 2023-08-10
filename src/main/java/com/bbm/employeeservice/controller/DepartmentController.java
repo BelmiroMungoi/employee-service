@@ -54,6 +54,11 @@ public class DepartmentController {
         return ResponseEntity.ok(departmentService.mapToDepartmentResponse(department));
     }
 
+    @GetMapping("/quantity")
+    public ResponseEntity<Integer> getDepartmentQuantityByUser(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(departmentService.getDepartmentQuantity(authenticatedUser.getId()));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AppResponse> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentRequest request,
                                                         @AuthenticationPrincipal User authenticatedUser) {

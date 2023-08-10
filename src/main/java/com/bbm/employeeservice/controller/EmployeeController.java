@@ -89,6 +89,11 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    @GetMapping("/quantity")
+    public ResponseEntity<Integer> getEmployeeQuantityByUser(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(employeeService.getEmployeeQuantityByUser(authenticatedUser.getId()));
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<EmployeeResponse>> searchAllEmployeesByName(@RequestBody SearchRequest request) {
         List<EmployeeResponse> employees = employeeService.searchAllEmployeesByName(request);

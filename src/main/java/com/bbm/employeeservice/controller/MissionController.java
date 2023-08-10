@@ -57,6 +57,11 @@ public class MissionController {
         return ResponseEntity.ok(missionService.getAllStatus());
     }
 
+    @GetMapping("/quantity")
+    public ResponseEntity<Integer> getMissionByUserId(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.getMissionQuantityByUser(authenticatedUser.getId()));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AppResponse> updateMission(@PathVariable Long id, @Valid @RequestBody MissionRequest request,
                                                      @AuthenticationPrincipal User authenticatedUser) {

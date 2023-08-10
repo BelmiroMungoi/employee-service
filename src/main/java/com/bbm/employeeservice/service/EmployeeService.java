@@ -138,6 +138,10 @@ public class EmployeeService {
         return employees.stream().map(this::mapToEmployeeResponse).toList();
     }
 
+    public Integer getEmployeeQuantityByUser(Long userId) {
+        return employeeRepository.countAllByUserId(userId);
+    }
+
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
         return EmployeeResponse.builder()
                 .id(employee.getId())
