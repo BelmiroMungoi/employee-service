@@ -119,7 +119,7 @@ public class EmployeeController {
     @GetMapping("/report")
     public ResponseEntity<String> downloadReport(HttpServletResponse response) throws IOException {
         byte[] pdf = reportService.generateReport(new HashMap<>());
-       String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+        String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
        /*response.setContentLength(pdf.length);
         response.setContentType("application/octet-stream");
         String header = "Content-Disposition";
