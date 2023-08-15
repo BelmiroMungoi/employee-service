@@ -139,6 +139,7 @@ public class AuthenticationService {
 
     private UserResponse maptoUserResponse(User user) {
         return UserResponse.builder()
+                .userId(user.getId())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .email(user.getEmail())

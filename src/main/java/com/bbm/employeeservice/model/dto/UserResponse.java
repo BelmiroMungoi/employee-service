@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class UserResponse {
 
+    private Long userId;
     private String firstname;
     private String lastname;
     private String email;
