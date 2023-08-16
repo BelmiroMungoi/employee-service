@@ -7,6 +7,7 @@ import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.DepartmentRepository;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.EmployeeSearchDao;
+import com.bbm.employeeservice.repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final PositionRepository positionRepository;
     private final EmployeeSearchDao employeeSearch;
     private final DepartmentService departmentService;
     private final AddressService addressService;
@@ -142,6 +144,11 @@ public class EmployeeService {
         return employeeRepository.countAllByUserId(userId);
     }
 
+    public List<PositionResponse> getAllPosition() {
+        List<Position> position = positionRepository.findAll();
+        return position.stream().map(this::mapToPositionResponse).toList();
+    }
+
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
         return EmployeeResponse.builder()
                 .id(employee.getId())
@@ -150,17 +157,27 @@ public class EmployeeService {
                 .lastname(employee.getLastname())
                 .email(employee.getEmail())
                 .birthdate(employee.getBirthdate())
-                .address(AddressResponse.builder()
-                        .houseNumber(employee.getAddress().getHouseNumber())
-                        .street(employee.getAddress().getStreet())
-                        .zipCode(employee.getAddress().getZipCode())
-                        .build())
+                .role(employee.getRole())
+                .salary(employee.getSalary())
                 .department(DepartmentResponse.builder()
                         .id(employee.getDepartment().getId())
                         .name(employee.getDepartment().getName())
                         .shortName(employee.getDepartment().getShortName())
                         .build())
-                .role(employee.getRole())
+                .positionResponse(PositionResponse.builder()
+                        .positionName(employee.getPosition().getPositionName())
+                        .build())
+                .address(AddressResponse.builder()
+                        .houseNumber(employee.getAddress().getHouseNumber())
+                        .street(employee.getAddress().getStreet())
+                        .zipCode(employee.getAddress().getZipCode())
+                        .build())
+                .build();
+    }
+
+    public PositionResponse mapToPositionResponse(Position position) {
+        return PositionResponse.builder()
+                .positionName(position.getPositionName())
                 .build();
     }
 }

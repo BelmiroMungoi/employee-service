@@ -2,10 +2,7 @@ package com.bbm.employeeservice.controller;
 
 import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.User;
-import com.bbm.employeeservice.model.dto.AppResponse;
-import com.bbm.employeeservice.model.dto.EmployeeRequest;
-import com.bbm.employeeservice.model.dto.EmployeeResponse;
-import com.bbm.employeeservice.model.dto.SearchRequest;
+import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.service.EmployeeService;
 import com.bbm.employeeservice.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -92,6 +89,11 @@ public class EmployeeController {
     @GetMapping("/quantity")
     public ResponseEntity<Integer> getEmployeeQuantityByUser(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(employeeService.getEmployeeQuantityByUser(authenticatedUser.getId()));
+    }
+
+    @GetMapping("/position")
+    public ResponseEntity<List<PositionResponse>> getAllPosition() {
+        return ResponseEntity.ok(employeeService.getAllPosition());
     }
 
     @PostMapping("/search")
