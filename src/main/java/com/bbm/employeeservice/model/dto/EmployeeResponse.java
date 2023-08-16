@@ -25,4 +25,6 @@ public class EmployeeResponse {
     private AddressResponse address;
     private DepartmentResponse department;
     private Role role;
+    private Double salary;
+    private PositionResponse positionResponse;
 }
