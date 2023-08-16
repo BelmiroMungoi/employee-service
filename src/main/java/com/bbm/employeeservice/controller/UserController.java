@@ -27,7 +27,7 @@ public class UserController {
     public ResponseEntity<Integer> countAllEnabledUsers() {
         return ResponseEntity.ok(userService.countAllEnabledUsers());
     }
-    
+
     @GetMapping("/get")
     public ResponseEntity<UserResponse> getUserById(@AuthenticationPrincipal User authenticateUser) {
         User user = userService.getUserById(authenticateUser.getId());
