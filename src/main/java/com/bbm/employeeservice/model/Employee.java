@@ -35,6 +35,8 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
 
+    private Double salary;
+
     @DateTimeFormat(iso = DATE, pattern = "dd/MM/yyyy")
     private LocalDate birthdate;
 
@@ -61,4 +63,8 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "position_id")
+    private Position position;
 }
