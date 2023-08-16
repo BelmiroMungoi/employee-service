@@ -28,6 +28,7 @@ public class ReportService {
                     + File.separator + "EmployeeRep.jasper").getAbsolutePath();
             //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
             JasperPrint print = JasperFillManager.fillReport(file, params, connection);
+            connection.close();
             return JasperExportManager.exportReportToPdf(print);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
