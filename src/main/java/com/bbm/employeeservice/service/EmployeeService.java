@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class EmployeeService {
     private final DepartmentService departmentService;
     private final AddressService addressService;
     private final MissionService missionService;
+    private final JdbcTemplate jdbcTemplate;
 
     public AppResponse createEmployee(EmployeeRequest employeeRequest, Long userId) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
@@ -147,6 +149,26 @@ public class EmployeeService {
     public List<PositionResponse> getAllPosition() {
         List<Position> position = positionRepository.findAll();
         return position.stream().map(this::mapToPositionResponse).toList();
+    }
+
+    public UserChartResponse generateChart() {
+        UserChartResponse userChart = new UserChartResponse();
+
+        List<String> result = jdbcTemplate.queryForList(
+                "select array_agg(firstname) from employee where salary > 0 and firstname <> ''" +
+                        "union all select cast(array_agg(salary) as character varying[])" +
+                        "from employee where salary > 0 and firstname <> ''",
+                String.class
+        );
+        if (!result.isEmpty()) {
+            String firstname = result.get(0).replaceAll("\\{","").replaceAll("}", "");
+            String salary = result.get(1).replaceAll("\\{","").replaceAll("}", "");
+
+            userChart.setFirstname(firstname);
+            userChart.setSalary(salary);
+        }
+
+        return userChart;
     }
 
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
