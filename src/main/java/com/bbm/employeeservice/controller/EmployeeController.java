@@ -96,6 +96,11 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllPosition());
     }
 
+    @GetMapping("/chart")
+    public ResponseEntity<UserChartResponse> generateChart() {
+        return ResponseEntity.ok(employeeService.generateChart());
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<EmployeeResponse>> searchAllEmployeesByName(@RequestBody SearchRequest request) {
         List<EmployeeResponse> employees = employeeService.searchAllEmployeesByName(request);
