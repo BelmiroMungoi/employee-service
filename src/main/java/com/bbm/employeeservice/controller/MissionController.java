@@ -45,6 +45,13 @@ public class MissionController {
         return ResponseEntity.ok(missionService.getAllMissionByName(page, name, authenticatedUser.getId()));
     }
 
+    @GetMapping("/employee/{employeeId}/page/{page}")
+    public ResponseEntity<Page<MissionResponse>> getAllMissionByEmployeeId(@PathVariable("employeeId") Long emplooyeeId,
+                                                                           @PathVariable("page") int page,
+                                                                           @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.getAllMissionByEmployeeIdAndUserId(page, emplooyeeId, authenticatedUser.getId()));
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<MissionResponse> getMissionById(@PathVariable("id") Long id,
                                                                @AuthenticationPrincipal User authenticatedUser){
