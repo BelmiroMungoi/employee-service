@@ -1,10 +1,7 @@
 package com.bbm.employeeservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -38,9 +35,14 @@ public class Mission {
     private MissionStatus missionStatus;
 
     @ManyToMany(mappedBy = "missions")
+    @EqualsAndHashCode.Exclude
     private Set<Employee> employees;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void addEmployee(Employee employee) {
+        employees.add(employee);
+    }
 }
