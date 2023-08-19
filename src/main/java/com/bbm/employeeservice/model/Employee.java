@@ -1,10 +1,7 @@
 package com.bbm.employeeservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -58,6 +55,7 @@ public class Employee {
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "mission_id")
     )
+    @EqualsAndHashCode.Exclude
     private Set<Mission> missions;
 
     @ManyToOne
@@ -67,4 +65,8 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "position_id")
     private Position position;
+
+    public void addMission(Mission mission) {
+        missions.add(mission);
+    }
 }
