@@ -70,6 +70,12 @@ public class MissionService {
         return mission.map(this::mapToMissionResponse);
     }
 
+    public Page<MissionResponse> getAllMissionByEmployeeIdAndUserId(int page, Long employeeId, Long userId) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Mission> missions = missionRepository.findAllByEmployeeAndUserId(pageRequest, employeeId, userId);
+        return missions.map(this::mapToMissionResponse);
+    }
+
     public List<StatusResponse> getAllStatus() {
         List<MissionStatus> status = missionStatusRepository.findAll();
         return status.stream().map(this::mapToStatusResponse).toList();
