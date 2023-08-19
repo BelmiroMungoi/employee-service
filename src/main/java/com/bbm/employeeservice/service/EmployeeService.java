@@ -4,10 +4,8 @@ import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.*;
 import com.bbm.employeeservice.model.dto.*;
-import com.bbm.employeeservice.repository.DepartmentRepository;
-import com.bbm.employeeservice.repository.EmployeeRepository;
-import com.bbm.employeeservice.repository.EmployeeSearchDao;
-import com.bbm.employeeservice.repository.PositionRepository;
+import com.bbm.employeeservice.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -151,6 +149,12 @@ public class EmployeeService {
         return position.stream().map(this::mapToPositionResponse).toList();
     }
 
+    public Page<EmployeeResponse> getAllEmployeeByMissionId(Long missionId, Long userId, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllByMissionIdAndUserId(pageRequest, missionId, userId);
+        return employees.map(this::mapToEmployeeResponse);
+    }
+
     public UserChartResponse generateChart() {
         UserChartResponse userChart = new UserChartResponse();
 
@@ -169,6 +173,24 @@ public class EmployeeService {
         }
 
         return userChart;
+    }
+
+    @Transactional
+    public AppResponse addMissionToEmployee(Long missionId, Long employeeId, Long userId) {
+        Employee employee = getEmployeeById(employeeId, userId);
+        Mission mission = missionService.getMissionById(missionId, userId);
+        if (mission.getEmployees().contains(employee)) {
+            throw new BusinessException("Este funcionário já está alocado á um projecto");
+        }
+        employee.addMission(mission);
+        mission.addEmployee(employee);
+        employeeRepository.save(employee);
+
+        return AppResponse.builder()
+                .responseCode("200")
+                .responseMessage("Funcionário foi alocado para o projecto com sucesso!")
+                .name(employee.getFirstname() + " " + employee.getLastname())
+                .build();
     }
 
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
