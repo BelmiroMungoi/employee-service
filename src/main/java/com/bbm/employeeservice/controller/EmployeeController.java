@@ -96,6 +96,13 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllPosition());
     }
 
+    @GetMapping("/mission/{missionId}/page/{page}")
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByMissionId(@PathVariable("missionId") Long missionId,
+                                                                            @AuthenticationPrincipal User authenticatedUser,
+                                                                            @PathVariable("page") int page) {
+        return ResponseEntity.ok(employeeService.getAllEmployeeByMissionId(missionId, authenticatedUser.getId(), page));
+    }
+
     @GetMapping("/chart")
     public ResponseEntity<UserChartResponse> generateChart() {
         return ResponseEntity.ok(employeeService.generateChart());
@@ -115,6 +122,13 @@ public class EmployeeController {
         var employeeResponse = employeeService.updateEmployee(id, employeeRequest, authenticatedUser.getId());
 
         return new ResponseEntity<>(employeeResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/mission/{missionId}/employee/{employeeId}")
+    public ResponseEntity<AppResponse> addMissionToEmployee(@PathVariable("missionId") Long missionId,
+                                                            @PathVariable("employeeId") Long employeeId,
+                                                            @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(employeeService.addMissionToEmployee(missionId, employeeId, authenticatedUser.getId()));
     }
 
     @DeleteMapping("/{id}")
