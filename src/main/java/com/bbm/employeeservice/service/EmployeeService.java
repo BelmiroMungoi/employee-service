@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -28,14 +29,17 @@ public class EmployeeService {
     private final DepartmentService departmentService;
     private final AddressService addressService;
     private final MissionService missionService;
+    private final ImageService imageService;
     private final JdbcTemplate jdbcTemplate;
 
-    public AppResponse createEmployee(EmployeeRequest employeeRequest, Long userId) {
+    public AppResponse createEmployee(EmployeeRequest employeeRequest, MultipartFile file, Long userId) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
             throw new BusinessException("Já existe um funcionário registrado com esse Email");
         }
+
         User user = new User(userId);
         Address saveAddress = addressService.saveAddress(employeeRequest);
+        Position position = positionRepository.findByPositionName(employeeRequest.getPosition());
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
         getDepartment.setEmployeeQuantity(getDepartment.getEmployeeQuantity() + 1);
 
@@ -45,11 +49,17 @@ public class EmployeeService {
                 .lastname(employeeRequest.getLastname())
                 .email(employeeRequest.getEmail())
                 .birthdate(employeeRequest.getBirthdate())
+                .salary(employeeRequest.getSalary())
                 .address(saveAddress)
                 .department(getDepartment)
+                .position(position)
                 .role(Role.USER)
                 .user(user)
                 .build();
+        if (file != null) {
+            Image image = imageService.upload(file, null);
+            employee.setImage(image);
+        }
         employeeRepository.save(employee);
 
         return AppResponse.builder()
@@ -102,6 +112,7 @@ public class EmployeeService {
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
         getDepartment.setEmployeeQuantity(getDepartment.getEmployeeQuantity() + 1);
         Set<Mission> getMission = missionService.getMissionByName(employeeRequest.getMission(), userId);
+        Position position = positionRepository.findByPositionName(employeeRequest.getPosition());
 
         Employee employee = getEmployeeById(employeeId, userId);
         employee.getDepartment().setEmployeeQuantity(employee.getDepartment().getEmployeeQuantity() - 1);
@@ -111,9 +122,11 @@ public class EmployeeService {
         employee.setLastname(employeeRequest.getLastname());
         employee.setEmail(employeeRequest.getEmail());
         employee.setBirthdate(employeeRequest.getBirthdate());
+        employee.setSalary(employeeRequest.getSalary());
         employee.setAddress(updateAddress);
         employee.setDepartment(getDepartment);
         employee.setMissions(getMission);
+        employee.setPosition(position);
         employeeRepository.save(employee);
 
         return AppResponse.builder()
@@ -125,6 +138,8 @@ public class EmployeeService {
 
     public void deleteEmployee(Long employeeId, Long userId) {
         Employee employee = getEmployeeById(employeeId, userId);
+        employee.getDepartment().setEmployeeQuantity(employee.getDepartment().getEmployeeQuantity() - 1);
+        departmentRepository.save(employee.getDepartment());
         employeeRepository.delete(employee);
     }
 
@@ -155,6 +170,12 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    public Page<EmployeeResponse> getAllEmployeeWithoutThatMission(Long missionId, Long userId, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Employee> employees = employeeRepository.findAllEmployeeWithoutThatMission(pageRequest, missionId, userId);
+        return employees.map(this::mapToEmployeeResponse);
+    }
+
     public UserChartResponse generateChart() {
         UserChartResponse userChart = new UserChartResponse();
 
@@ -180,7 +201,7 @@ public class EmployeeService {
         Employee employee = getEmployeeById(employeeId, userId);
         Mission mission = missionService.getMissionById(missionId, userId);
         if (mission.getEmployees().contains(employee)) {
-            throw new BusinessException("Este funcionário já está alocado á um projecto");
+            throw new BusinessException("Este funcionário já está alocado á esse projecto");
         }
         employee.addMission(mission);
         mission.addEmployee(employee);
