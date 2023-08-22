@@ -25,8 +25,4 @@ public class Image {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
 }
