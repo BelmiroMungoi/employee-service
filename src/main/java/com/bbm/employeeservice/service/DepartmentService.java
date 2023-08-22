@@ -1,5 +1,6 @@
 package com.bbm.employeeservice.service;
 
+import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.Department;
 import com.bbm.employeeservice.model.User;
@@ -23,6 +24,9 @@ public class DepartmentService {
 
     public AppResponse createDepartment(DepartmentRequest request, Long userId) {
         User user = new User(userId);
+        if (departmentRepository.existsByNameAndUserId(request.getName(), userId)) {
+            throw new BusinessException("Já existe um departamento com esse nome!");
+        }
         Department department = Department.builder()
                 .name(request.getName())
                 .shortName(request.getShortName())
