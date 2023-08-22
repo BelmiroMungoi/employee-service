@@ -20,13 +20,7 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadImageForUser(@RequestParam("file") MultipartFile file,
                                     @AuthenticationPrincipal User authenticatedUser){
-        return new ResponseEntity<>(imageService.upload(file, authenticatedUser.getId(), null), HttpStatus.OK);
-    }
-    @PostMapping("/upload/{employeeId}")
-    public ResponseEntity<?> uploadImageForEmployee(@RequestParam("file") MultipartFile file,
-                                    @AuthenticationPrincipal User authenticatedUser,
-                                    @PathVariable("employeeId") Long employeeId){
-        return new ResponseEntity<>(imageService.upload(file, authenticatedUser.getId(), employeeId), HttpStatus.OK);
+        return new ResponseEntity<>(imageService.upload(file, authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @GetMapping("/download/")
