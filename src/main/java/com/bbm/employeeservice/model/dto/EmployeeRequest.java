@@ -41,6 +41,8 @@ public class EmployeeRequest {
     private String zipCode;
     private String department;
     private String mission;
+    private String position;
     private LocalDate birthdate;
+    private Double salary;
     private Role role;
 }
