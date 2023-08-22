@@ -45,11 +45,11 @@ public class Employee {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(
             name = "employee_mission",
             joinColumns = @JoinColumn(name = "employee_id"),
@@ -65,6 +65,10 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "position_id")
     private Position position;
+
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public void addMission(Mission mission) {
         missions.add(mission);
