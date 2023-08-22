@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,8 +30,9 @@ public class EmployeeController {
 
     @PostMapping("/")
     public ResponseEntity<AppResponse> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest,
-                                                      @AuthenticationPrincipal User authenticatedUser) {
-        var employee = employeeService.createEmployee(employeeRequest, authenticatedUser.getId());
+                                                      @AuthenticationPrincipal User authenticatedUser,
+                                                      @RequestParam(value = "file", required = false) MultipartFile file) {
+        var employee = employeeService.createEmployee(employeeRequest, file, authenticatedUser.getId());
         return new ResponseEntity<>(employee, HttpStatus.CREATED);
     }
 
@@ -101,6 +103,12 @@ public class EmployeeController {
                                                                             @AuthenticationPrincipal User authenticatedUser,
                                                                             @PathVariable("page") int page) {
         return ResponseEntity.ok(employeeService.getAllEmployeeByMissionId(missionId, authenticatedUser.getId(), page));
+    }
+    @GetMapping("/missionId/{missionId}/page/{page}")
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeWithoutThatMission(@PathVariable("missionId") Long missionId,
+                                                                            @AuthenticationPrincipal User authenticatedUser,
+                                                                            @PathVariable("page") int page) {
+        return ResponseEntity.ok(employeeService.getAllEmployeeWithoutThatMission(missionId, authenticatedUser.getId(), page));
     }
 
     @GetMapping("/chart")
