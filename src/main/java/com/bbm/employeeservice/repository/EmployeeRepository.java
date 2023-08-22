@@ -25,7 +25,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             "em ON e.id = em.employee_id WHERE em.mission_id = :missionId and e.user_id = :userId")
     Page<Employee> findAllByMissionIdAndUserId(PageRequest pageRequest, Long missionId, Long userId);
 
+    @Query(nativeQuery = true, value = "SELECT e.* FROM employee AS e LEFT JOIN employee_mission AS " +
+            "em ON e.id = em.employee_id AND em.mission_id = :missionId " +
+            "WHERE em.mission_id IS NULL AND e.user_id = :userId")
+    Page<Employee> findAllEmployeeWithoutThatMission(PageRequest pageRequest, Long missionId, Long userId);
+
     Integer countAllByUserId(Long userId);
-
-
 }
