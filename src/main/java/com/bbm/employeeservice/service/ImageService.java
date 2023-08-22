@@ -2,13 +2,13 @@ package com.bbm.employeeservice.service;
 
 import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
-import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.Image;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.repository.ImageRepository;
 import com.bbm.employeeservice.utils.ImageUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,18 +20,14 @@ import java.util.zip.Inflater;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ImageService {
 
     private final ImageRepository imageRepository;
-    private final EmployeeService employeeService;
 
-    public String upload(MultipartFile file, Long userId, Long employeeId) {
+    public Image upload(MultipartFile file, Long userId) {
         User user = new User(userId);
         String contentType = file.getContentType();
-        Employee employee = null;
-        if (employeeId != null) {
-            employee = employeeService.getEmployeeById(employeeId, userId);
-        }
         boolean isAnImageFile = ImageUtils.isValidImageFile(contentType);
         if (isAnImageFile) {
             try {
@@ -39,14 +35,10 @@ public class ImageService {
                         .originalFileName(file.getOriginalFilename())
                         .fileType(file.getContentType())
                         .image(compressBytes(file.getBytes()))
+                        .user(user)
                         .build();
-                if (employee != null) {
-                    image.setEmployee(employee);
-                } else {
-                    image.setUser(user);
-                }
-                imageRepository.save(image);
-                return "Imagem foi Carregada com Sucesso";
+                log.info("Imagem foi Carregada com Sucesso");
+                return imageRepository.save(image);
             } catch (Exception e) {
                 throw new BusinessException("Não foi possível salvar a Imagem: " + file.getOriginalFilename() +
                         "\nOcorreu um erro interno. Por favor tente novamente. Caso o erro persista contacte o ADMIN!");
