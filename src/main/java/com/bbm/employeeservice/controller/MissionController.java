@@ -76,6 +76,13 @@ public class MissionController {
         return new ResponseEntity<>(mission, HttpStatus.OK);
     }
 
+    @PutMapping("/employee/{employeeId}/mission/{missionId}")
+    public ResponseEntity<AppResponse> addEmployeeToMission(@PathVariable("missionId") Long missionId,
+                                                            @PathVariable("employeeId") Long employeeId,
+                                                            @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.addEmployeeToMission(missionId, employeeId, authenticatedUser.getId()));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMission(@PathVariable Long id, @AuthenticationPrincipal User authenticatedUser) {
         missionService.deleteMission(id, authenticatedUser.getId());
