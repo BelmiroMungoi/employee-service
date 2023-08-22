@@ -1,6 +1,8 @@
 package com.bbm.employeeservice.service;
 
+import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
+import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.Mission;
 import com.bbm.employeeservice.model.MissionStatus;
 import com.bbm.employeeservice.model.User;
@@ -8,8 +10,10 @@ import com.bbm.employeeservice.model.dto.AppResponse;
 import com.bbm.employeeservice.model.dto.MissionRequest;
 import com.bbm.employeeservice.model.dto.MissionResponse;
 import com.bbm.employeeservice.model.dto.StatusResponse;
+import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.MissionRepository;
 import com.bbm.employeeservice.repository.MissionStatusRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +30,7 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
     private final MissionStatusRepository missionStatusRepository;
+    private final EmployeeRepository employeeRepository;
 
     public AppResponse createMission(MissionRequest request, Long userId) {
         User user = new User(userId);
@@ -103,6 +108,26 @@ public class MissionService {
     public void deleteMission(Long id, Long userId) {
         Mission mission = getMissionById(id, userId);
         missionRepository.delete(mission);
+    }
+
+    @Transactional
+    public AppResponse addEmployeeToMission(Long missionId, Long employeeId, Long userId) {
+        Employee employee = employeeRepository.findByIdAndUserId(employeeId, userId).orElseThrow(() ->
+                new EntityNotFoundException("Funcionário não foi encontrado"));
+        Mission mission = getMissionById(missionId, userId);
+        if (employee.getMissions().contains(mission)) {
+            throw new BusinessException("Este projecto já está alocado á esse funcionário");
+        }
+
+        mission.addEmployee(employee);
+        employee.addMission(mission);
+        missionRepository.save(mission);
+
+        return AppResponse.builder()
+                .responseCode("200")
+                .responseMessage("Funcionário foi alocado para o projecto com sucesso!")
+                .name(employee.getFirstname() + " " + employee.getLastname())
+                .build();
     }
 
     public MissionResponse mapToMissionResponse(Mission mission) {
