@@ -33,4 +33,10 @@ public class ImageController {
                         "attachment; filename=\"" + image.getOriginalFileName() + "\"")
                 .body(new ByteArrayResource(image.getImage()));*/
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteImage(@AuthenticationPrincipal User authenticatedUser) {
+        imageService.delete(authenticatedUser.getId());
+        return new ResponseEntity<>("Imagem eliminada com sucesso!", HttpStatus.OK);
+    }
 }
