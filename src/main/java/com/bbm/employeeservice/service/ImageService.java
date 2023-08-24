@@ -5,6 +5,7 @@ import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.Image;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.repository.ImageRepository;
+import com.bbm.employeeservice.repository.UserRepository;
 import com.bbm.employeeservice.utils.ImageUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,10 @@ import java.util.zip.Inflater;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
     public Image upload(MultipartFile file, Long userId) {
-        User user = new User(userId);
+        User user = userRepository.findUserById(userId);
         String contentType = file.getContentType();
         boolean isAnImageFile = ImageUtils.isValidImageFile(contentType);
         if (isAnImageFile) {
@@ -35,13 +37,15 @@ public class ImageService {
                         .originalFileName(file.getOriginalFilename())
                         .fileType(file.getContentType())
                         .image(compressBytes(file.getBytes()))
-                        .user(user)
                         .build();
-                log.info("Imagem foi Carregada com Sucesso");
+                if (user != null) {
+                    image.setUser(user);
+                }
                 return imageRepository.save(image);
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 throw new BusinessException("Não foi possível salvar a Imagem: " + file.getOriginalFilename() +
-                        "\nOcorreu um erro interno. Por favor tente novamente. Caso o erro persista contacte o ADMIN!");
+                        " Ocorreu um erro interno. Por favor tente novamente. Caso o erro persista contacte o ADMIN!");
             }
         } else
             throw new BusinessException("Tipo de ficheiro não é válido!");
@@ -57,6 +61,13 @@ public class ImageService {
                 .fileType(img.getFileType())
                 .image(decompressBytes(img.getImage()))
                 .build();
+    }
+
+    @Transactional
+    public void delete(Long userId) {
+        var img = imageRepository.findByUserId(userId).orElseThrow(() ->
+                new EntityNotFoundException("Não foi possível fazer o download da imagem!"));
+        imageRepository.delete(img);
     }
 
     public static byte[] compressBytes(byte[] data) {
