@@ -44,7 +44,7 @@ public class EmployeeController {
 
     @GetMapping("/page/{page}")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeesPerPage(@PathVariable("page") int page,
-                                                                             @AuthenticationPrincipal User authenticatedUser) {
+                                                                         @AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService.getEmployeesPerPage(page, authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
@@ -73,7 +73,7 @@ public class EmployeeController {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstname(@PathVariable("name") String name,
-                                                                           @AuthenticationPrincipal User authenticatedUser) {
+                                                                            @AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService
                 .getEmployeeByFirstname(name, authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
@@ -81,8 +81,8 @@ public class EmployeeController {
 
     @GetMapping("/name/{name}/page/{page}")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstnamePerPage(@PathVariable("name") String name,
-                                                                            @PathVariable("page") int page,
-                                                                            @AuthenticationPrincipal User authenticatedUser) {
+                                                                                   @PathVariable("page") int page,
+                                                                                   @AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService
                 .getEmployeeByFirstnamePerPage(page, name, authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
@@ -104,10 +104,11 @@ public class EmployeeController {
                                                                             @PathVariable("page") int page) {
         return ResponseEntity.ok(employeeService.getAllEmployeeByMissionId(missionId, authenticatedUser.getId(), page));
     }
+
     @GetMapping("/missionId/{missionId}/page/{page}")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeWithoutThatMission(@PathVariable("missionId") Long missionId,
-                                                                            @AuthenticationPrincipal User authenticatedUser,
-                                                                            @PathVariable("page") int page) {
+                                                                                   @AuthenticationPrincipal User authenticatedUser,
+                                                                                   @PathVariable("page") int page) {
         return ResponseEntity.ok(employeeService.getAllEmployeeWithoutThatMission(missionId, authenticatedUser.getId(), page));
     }
 
@@ -137,6 +138,13 @@ public class EmployeeController {
                                                             @PathVariable("employeeId") Long employeeId,
                                                             @AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(employeeService.addMissionToEmployee(missionId, employeeId, authenticatedUser.getId()));
+    }
+
+    @PutMapping("/upload/{employeeId}")
+    public ResponseEntity<AppResponse> addImageToEmployee(@RequestParam("file") MultipartFile file,
+                                                          @PathVariable("employeeId") Long employeeId,
+                                                          @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(employeeService.addImageToEmployee(file, employeeId, authenticatedUser.getId()));
     }
 
     @DeleteMapping("/{id}")
