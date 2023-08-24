@@ -27,4 +27,5 @@ public class EmployeeResponse {
     private Role role;
     private Double salary;
     private PositionResponse positionResponse;
+    private ImageResponse imageResponse;
 }
