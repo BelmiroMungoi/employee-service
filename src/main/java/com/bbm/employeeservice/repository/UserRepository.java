@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(nativeQuery = true, value = "select count(*) from users where is_enabled = true")
     Integer countAllEnabledUser();
     boolean existsByEmail(String email);
+
+    User findUserById(Long id);
 }
