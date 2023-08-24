@@ -4,16 +4,26 @@ import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.*;
 import com.bbm.employeeservice.model.dto.*;
-import com.bbm.employeeservice.repository.*;
+import com.bbm.employeeservice.repository.DepartmentRepository;
+import com.bbm.employeeservice.repository.EmployeeRepository;
+import com.bbm.employeeservice.repository.EmployeeSearchDao;
+import com.bbm.employeeservice.repository.PositionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -56,12 +66,9 @@ public class EmployeeService {
                 .role(Role.USER)
                 .user(user)
                 .build();
-        if (file != null) {
-            Image image = imageService.upload(file, null);
-            employee.setImage(image);
-        }
         employeeRepository.save(employee);
 
+        getDefaultPic(employee.getId(), userId);
         return AppResponse.builder()
                 .responseCode("201")
                 .responseMessage("Funcionário foi Salvo com Sucesso")
@@ -69,6 +76,7 @@ public class EmployeeService {
                 .build();
     }
 
+    @Transactional
     public Page<EmployeeResponse> getEmployees(Long userId) {
         PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllByUserId(pageRequest, userId);
@@ -76,6 +84,7 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    @Transactional
     public Page<EmployeeResponse> getEmployeesPerPage(int page, Long userId) {
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllByUserId(pageRequest, userId);
@@ -83,11 +92,13 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    @Transactional
     public Employee getEmployeeById(Long employeeId, Long userId) {
         return employeeRepository.findByIdAndUserId(employeeId, userId).orElseThrow(() ->
                 new EntityNotFoundException("Funcionário com ID: " + employeeId + " não foi encontrado."));
     }
 
+    @Transactional
     public Page<EmployeeResponse> getEmployeeByFirstname(String firstname, Long userId) {
         PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(pageRequest, firstname, userId).orElseThrow(() ->
@@ -95,6 +106,7 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    @Transactional
     public Page<EmployeeResponse> getEmployeeByFirstnamePerPage(int page, String firstname, Long userId) {
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllByFirstnameContainsIgnoreCaseAndUserId(pageRequest, firstname, userId).orElseThrow(() ->
@@ -102,12 +114,14 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    @Transactional
     public List<EmployeeResponse> getAllEmployeesByDepartment(String departmentName, Long userId) {
         List<Employee> employees = employeeRepository.findAllByDepartmentNameAndUserId(departmentName, userId);
 
         return employees.stream().map(this::mapToEmployeeResponse).toList();
     }
 
+    @Transactional
     public AppResponse updateEmployee(Long employeeId, EmployeeRequest employeeRequest, Long userId) {
         Department getDepartment = departmentService.getDepartmentByName(employeeRequest.getDepartment(), userId);
         getDepartment.setEmployeeQuantity(getDepartment.getEmployeeQuantity() + 1);
@@ -136,6 +150,7 @@ public class EmployeeService {
                 .build();
     }
 
+    @Transactional
     public void deleteEmployee(Long employeeId, Long userId) {
         Employee employee = getEmployeeById(employeeId, userId);
         employee.getDepartment().setEmployeeQuantity(employee.getDepartment().getEmployeeQuantity() - 1);
@@ -143,12 +158,14 @@ public class EmployeeService {
         employeeRepository.delete(employee);
     }
 
+    @Transactional
     public List<EmployeeResponse> searchAllEmployees(String firstname, String lastname, String email) {
         List<Employee> employees = employeeSearch.findAllBySimpleQuery(firstname, lastname, email);
 
         return employees.stream().map(this::mapToEmployeeResponse).toList();
     }
 
+    @Transactional
     public List<EmployeeResponse> searchAllEmployeesByName(SearchRequest request) {
         List<Employee> employees = employeeSearch.findAllByCriteria(request);
 
@@ -164,12 +181,14 @@ public class EmployeeService {
         return position.stream().map(this::mapToPositionResponse).toList();
     }
 
+    @Transactional
     public Page<EmployeeResponse> getAllEmployeeByMissionId(Long missionId, Long userId, int page) {
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllByMissionIdAndUserId(pageRequest, missionId, userId);
         return employees.map(this::mapToEmployeeResponse);
     }
 
+    @Transactional
     public Page<EmployeeResponse> getAllEmployeeWithoutThatMission(Long missionId, Long userId, int page) {
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("id"));
         Page<Employee> employees = employeeRepository.findAllEmployeeWithoutThatMission(pageRequest, missionId, userId);
@@ -186,8 +205,8 @@ public class EmployeeService {
                 String.class
         );
         if (!result.isEmpty()) {
-            String firstname = result.get(0).replaceAll("\\{","").replaceAll("}", "");
-            String salary = result.get(1).replaceAll("\\{","").replaceAll("}", "");
+            String firstname = result.get(0).replaceAll("\\{", "").replaceAll("}", "");
+            String salary = result.get(1).replaceAll("\\{", "").replaceAll("}", "");
 
             userChart.setFirstname(firstname);
             userChart.setSalary(salary);
@@ -214,6 +233,33 @@ public class EmployeeService {
                 .build();
     }
 
+    @Transactional
+    public AppResponse addImageToEmployee(MultipartFile file, Long employeeId, Long userId) {
+        Employee employee = getEmployeeById(employeeId, userId);
+        if (!file.isEmpty()) {
+            Image image = imageService.upload(file, null);
+            employee.setImage(image);
+            employeeRepository.save(employee);
+        }
+        return AppResponse.builder()
+                .responseCode("200")
+                .responseMessage("Imagem foi actualizada com sucesso!")
+                .name(employee.getFirstname() + " " + employee.getLastname())
+                .build();
+    }
+
+    public void getDefaultPic(Long employeeId, Long userId) {
+        try {
+            File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
+            FileInputStream input = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile("file",
+                    file.getName(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
+            addImageToEmployee(multipartFile, employeeId, userId);
+        } catch (IOException fe) {
+            throw new BusinessException("Não encontrado");
+        }
+    }
+
     public EmployeeResponse mapToEmployeeResponse(Employee employee) {
         return EmployeeResponse.builder()
                 .id(employee.getId())
@@ -236,6 +282,11 @@ public class EmployeeService {
                         .houseNumber(employee.getAddress().getHouseNumber())
                         .street(employee.getAddress().getStreet())
                         .zipCode(employee.getAddress().getZipCode())
+                        .build())
+                .imageResponse(ImageResponse.builder()
+                        .image(ImageService.decompressBytes(employee.getImage().getImage()))
+                        .originalFileName(employee.getImage().getOriginalFileName())
+                        .fileType(employee.getImage().getFileType())
                         .build())
                 .build();
     }
