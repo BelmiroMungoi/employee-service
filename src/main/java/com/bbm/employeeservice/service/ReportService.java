@@ -34,7 +34,7 @@ public class ReportService {
             InputStream file = resource.getInputStream();
             //String file = ResourceUtils.getFile("classpath:" + "webapp" + File.separator + "reports" + File.separator + "EmployeeRep.jasper").getAbsolutePath();
             //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-            JasperPrint print = JasperFillManager.fillReport(String.valueOf(file), params, connection);
+            JasperPrint print = JasperFillManager.fillReport(file, params, connection);
             connection.close();
             return JasperExportManager.exportReportToPdf(print);
         } catch (Exception ex) {
