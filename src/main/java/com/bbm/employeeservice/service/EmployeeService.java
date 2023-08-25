@@ -256,6 +256,7 @@ public class EmployeeService {
                     file.getName(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
             addImageToEmployee(multipartFile, employeeId, userId);
         } catch (IOException fe) {
+            System.err.println(fe.getMessage());
             throw new BusinessException("Não encontrado");
         }
     }

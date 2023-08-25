@@ -81,7 +81,7 @@ public class EmployeeExceptionHandler extends ResponseEntityExceptionHandler {
 
         ErrorResponse response = new ErrorResponse();
         response.setStatus(status.value() + " ==> " + status.getReasonPhrase());
-        response.setTitle(ex.getMessage());
+        response.setTitle(ex.getCause().getMessage());
         response.setTime(OffsetDateTime.now());
 
         return handleExceptionInternal(ex, response, new HttpHeaders(), status, request);
