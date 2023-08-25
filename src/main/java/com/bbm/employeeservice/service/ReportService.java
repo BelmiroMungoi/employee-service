@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class ReportService {
             Connection connection = jdbcTemplate.getDataSource().getConnection();
             Resource resource = resourceLoader.getResource("classpath:" + "webapp" + File.separator + "reports"
                     + File.separator + "EmployeeRep.jasper");
-            File file = resource.getFile();
+            InputStream file = resource.getInputStream();
             //String file = ResourceUtils.getFile("classpath:" + "webapp" + File.separator + "reports" + File.separator + "EmployeeRep.jasper").getAbsolutePath();
             //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
             JasperPrint print = JasperFillManager.fillReport(String.valueOf(file), params, connection);
