@@ -11,6 +11,7 @@ import com.bbm.employeeservice.repository.PositionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -250,10 +250,11 @@ public class EmployeeService {
 
     public void getDefaultPic(Long employeeId, Long userId) {
         try {
-            File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
-            FileInputStream input = new FileInputStream(file);
+            ClassPathResource pathResource = new ClassPathResource("img" + File.separator + "default-profile.png");
+            //File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
+            FileInputStream input = new FileInputStream(pathResource.getFile());
             MultipartFile multipartFile = new MockMultipartFile("file",
-                    file.getName(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
+                    pathResource.getFilename(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
             addImageToEmployee(multipartFile, employeeId, userId);
         } catch (IOException fe) {
             System.err.println(fe.getMessage());
