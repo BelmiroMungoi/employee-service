@@ -26,14 +26,12 @@ public class ReportService {
 
     public byte[] generateReport(Map<String, Object> params) {
         try {
-            //List<Employee> employees = employeeRepository.findAll();
+             //List<Employee> employees = employeeRepository.findAll();
             //JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(employees);
             Connection connection = jdbcTemplate.getDataSource().getConnection();
             Resource resource = resourceLoader.getResource("classpath:" + "webapp" + File.separator + "reports"
                     + File.separator + "EmployeeRep.jasper");
             InputStream file = resource.getInputStream();
-            //String file = ResourceUtils.getFile("classpath:" + "webapp" + File.separator + "reports" + File.separator + "EmployeeRep.jasper").getAbsolutePath();
-            //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
             JasperPrint print = JasperFillManager.fillReport(file, params, connection);
             connection.close();
             return JasperExportManager.exportReportToPdf(print);

@@ -11,7 +11,8 @@ import com.bbm.employeeservice.repository.PositionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class EmployeeService {
     private final MissionService missionService;
     private final ImageService imageService;
     private final JdbcTemplate jdbcTemplate;
+    private final ResourceLoader resourceLoader;
 
     public AppResponse createEmployee(EmployeeRequest employeeRequest, MultipartFile file, Long userId) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
@@ -250,9 +252,9 @@ public class EmployeeService {
 
     public void getDefaultPic(Long employeeId, Long userId) {
         try {
-            ClassPathResource pathResource = new ClassPathResource("img" + File.separator + "default-profile.png");
+            Resource pathResource = resourceLoader.getResource("img" + File.separator + "default-profile.png");
             //File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
-            FileInputStream input = new FileInputStream(pathResource.getFile());
+            InputStream input = pathResource.getInputStream();
             MultipartFile multipartFile = new MockMultipartFile("file",
                     pathResource.getFilename(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
             addImageToEmployee(multipartFile, employeeId, userId);
