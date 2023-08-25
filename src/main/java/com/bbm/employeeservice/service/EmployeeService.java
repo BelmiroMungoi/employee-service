@@ -252,7 +252,7 @@ public class EmployeeService {
 
     public void getDefaultPic(Long employeeId, Long userId) {
         try {
-            Resource pathResource = resourceLoader.getResource("img" + File.separator + "default-profile.png");
+            Resource pathResource = resourceLoader.getResource("classpath:img" + File.separator + "default-profile.png");
             //File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
             InputStream input = pathResource.getInputStream();
             MultipartFile multipartFile = new MockMultipartFile("file",
