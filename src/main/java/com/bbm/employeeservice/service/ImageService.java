@@ -70,6 +70,13 @@ public class ImageService {
         imageRepository.delete(img);
     }
 
+    @Transactional
+    public void deleteFromEmployee(Long imageId) {
+        var img = imageRepository.findById(imageId).orElseThrow(() ->
+                new EntityNotFoundException("Não foi possível fazer o download da imagem!"));
+        imageRepository.delete(img);
+    }
+
     public static byte[] compressBytes(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
