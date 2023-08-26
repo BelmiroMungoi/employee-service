@@ -240,6 +240,7 @@ public class EmployeeService {
         Employee employee = getEmployeeById(employeeId, userId);
         if (!file.isEmpty()) {
             Image image = imageService.upload(file, null);
+            imageService.deleteFromEmployee(employee.getImage().getId());
             employee.setImage(image);
             employeeRepository.save(employee);
         }
@@ -253,7 +254,6 @@ public class EmployeeService {
     public void getDefaultPic(Long employeeId, Long userId) {
         try {
             Resource pathResource = resourceLoader.getResource("classpath:img" + File.separator + "default-profile.png");
-            //File file = ResourceUtils.getFile("classpath:" + "img" + File.separator + "default-profile.png");
             InputStream input = pathResource.getInputStream();
             MultipartFile multipartFile = new MockMultipartFile("file",
                     pathResource.getFilename(), MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(input));
