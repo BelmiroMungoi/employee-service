@@ -22,6 +22,7 @@ public class EmployeeResponse {
     private String email;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthdate;
+    private LocalDate date;
     private AddressResponse address;
     private DepartmentResponse department;
     private Role role;

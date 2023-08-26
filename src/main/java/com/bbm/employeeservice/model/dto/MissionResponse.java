@@ -21,5 +21,6 @@ public class MissionResponse {
     private LocalDateTime startedDate;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate finishedDate;
+    private LocalDate finishedAt;
     private StatusResponse missionStatus;
 }
