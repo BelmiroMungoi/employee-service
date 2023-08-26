@@ -239,8 +239,10 @@ public class EmployeeService {
     public AppResponse addImageToEmployee(MultipartFile file, Long employeeId, Long userId) {
         Employee employee = getEmployeeById(employeeId, userId);
         if (!file.isEmpty()) {
+            if (employee.getImage() != null) {
+                imageService.deleteFromEmployee(employee.getImage().getId());
+            }
             Image image = imageService.upload(file, null);
-            imageService.deleteFromEmployee(employee.getImage().getId());
             employee.setImage(image);
             employeeRepository.save(employee);
         }
