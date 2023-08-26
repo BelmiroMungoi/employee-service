@@ -136,6 +136,7 @@ public class MissionService {
                 .missionName(mission.getMissionName())
                 .startedDate(mission.getStartedAt())
                 .finishedDate(mission.getFinishedAt())
+                .finishedAt(mission.getFinishedAt())
                 .missionStatus(StatusResponse.builder()
                         .missionStatus(mission.getMissionStatus().getStatus())
                         .build())

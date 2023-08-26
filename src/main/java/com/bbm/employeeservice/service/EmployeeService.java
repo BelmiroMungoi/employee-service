@@ -272,6 +272,7 @@ public class EmployeeService {
                 .lastname(employee.getLastname())
                 .email(employee.getEmail())
                 .birthdate(employee.getBirthdate())
+                .date(employee.getBirthdate())
                 .role(employee.getRole())
                 .salary(employee.getSalary())
                 .department(DepartmentResponse.builder()
