@@ -18,9 +18,10 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadImageForUser(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<String> uploadImageForUser(@RequestParam("file") MultipartFile file,
                                     @AuthenticationPrincipal User authenticatedUser){
-        return new ResponseEntity<>(imageService.upload(file, authenticatedUser.getId()), HttpStatus.OK);
+        imageService.upload(file, authenticatedUser.getId());
+        return new ResponseEntity<>("Imagem foi actualizada com sucesso!", HttpStatus.OK);
     }
 
     @GetMapping("/download/")
