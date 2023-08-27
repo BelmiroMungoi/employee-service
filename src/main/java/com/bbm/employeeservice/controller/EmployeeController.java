@@ -113,8 +113,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/chart")
-    public ResponseEntity<UserChartResponse> generateChart() {
-        return ResponseEntity.ok(employeeService.generateChart());
+    public ResponseEntity<UserChartResponse> generateChart(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(employeeService.generateChart(authenticatedUser.getId()));
     }
 
     @PostMapping("/search")

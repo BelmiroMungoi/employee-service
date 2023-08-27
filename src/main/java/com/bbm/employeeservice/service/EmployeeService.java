@@ -197,13 +197,13 @@ public class EmployeeService {
         return employees.map(this::mapToEmployeeResponse);
     }
 
-    public UserChartResponse generateChart() {
+    public UserChartResponse generateChart(Long userId) {
         UserChartResponse userChart = new UserChartResponse();
 
         List<String> result = jdbcTemplate.queryForList(
-                "select array_agg(firstname) from employee where salary > 0 and firstname <> ''" +
-                        "union all select cast(array_agg(salary) as character varying[])" +
-                        "from employee where salary > 0 and firstname <> ''",
+                "select array_agg(firstname) from employee where salary > 0 and firstname <> '' and user_id = " + userId +
+                        " union all select cast(array_agg(salary) as character varying[])" +
+                        " from employee where salary > 0 and firstname <> '' and user_id = " + userId,
                 String.class
         );
         if (!result.isEmpty()) {
