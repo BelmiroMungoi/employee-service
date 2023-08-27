@@ -4,10 +4,12 @@ import com.bbm.employeeservice.config.JwtTokenService;
 import com.bbm.employeeservice.exception.BusinessException;
 import com.bbm.employeeservice.exception.EntityNotFoundException;
 import com.bbm.employeeservice.model.ConfirmationToken;
+import com.bbm.employeeservice.model.Department;
 import com.bbm.employeeservice.model.Role;
 import com.bbm.employeeservice.model.User;
 import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.ConfirmationTokenRepository;
+import com.bbm.employeeservice.repository.DepartmentRepository;
 import com.bbm.employeeservice.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,7 @@ public class AuthenticationService {
     private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
     private final ConfirmationTokenRepository tokenRepository;
+    private final DepartmentRepository departmentRepository;
 
     public AppResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -48,6 +51,14 @@ public class AuthenticationService {
         var savedUser = userRepository.save(user);
         var token = jwtTokenService.generateToken(user);
         saveUserToken(savedUser, token);
+
+        Department department = Department.builder()
+                .name("Recursos Humanos")
+                .shortName("RH")
+                .employeeQuantity(0)
+                .user(user)
+                .build();
+        departmentRepository.save(department);
 
         emailService.sendHtmlEmail(savedUser.getFirstname() + " " + savedUser.getLastname(),
                 savedUser.getEmail(), token);
