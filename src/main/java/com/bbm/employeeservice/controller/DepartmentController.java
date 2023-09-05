@@ -8,6 +8,8 @@ import com.bbm.employeeservice.model.dto.DepartmentResponse;
 import com.bbm.employeeservice.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +33,22 @@ public class DepartmentController {
     }
 
     @GetMapping("/")
+    @CacheEvict(value = "departments", allEntries = true)
+    @CachePut("departments")
     public ResponseEntity<List<DepartmentResponse>> getAllDepartment(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(departmentService.getAllDepartments(authenticatedUser.getId()));
     }
     @GetMapping("/page/{page}")
+    @CacheEvict(value = "departments", allEntries = true)
+    @CachePut("departments")
     public ResponseEntity<Page<DepartmentResponse>> getAllDepartment(@PathVariable("page") int page,
                                                                      @AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(departmentService.getAllDepartments(page, authenticatedUser.getId()));
     }
 
     @GetMapping("/{name}/page/{page}")
+    @CacheEvict(value = "departments", allEntries = true)
+    @CachePut("departments")
     public ResponseEntity<Page<DepartmentResponse>> getDepartmentByName(@PathVariable("name") String name,
                                                                         @PathVariable("page") int page,
                                                                         @AuthenticationPrincipal User authenticatedUser) {
