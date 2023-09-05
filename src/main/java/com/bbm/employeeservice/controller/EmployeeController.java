@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +39,16 @@ public class EmployeeController {
     }
 
     @GetMapping("/")
+    @CacheEvict(value = "employees", allEntries = true)
+    @CachePut("employees")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(@AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService.getEmployees(authenticatedUser.getId());
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/page/{page}")
+    @CacheEvict(value = "employees", allEntries = true)
+    @CachePut("employees")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeesPerPage(@PathVariable("page") int page,
                                                                          @AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService.getEmployeesPerPage(page, authenticatedUser.getId());
@@ -50,6 +56,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/{department}")
+    @CacheEvict(value = "employeeByDepartment", allEntries = true)
+    @CachePut("employeeByDepartment")
     public ResponseEntity<List<EmployeeResponse>> getAllEmployeeByDepartment(@PathVariable("department") String department,
                                                                              @AuthenticationPrincipal User authenticatedUser) {
         List<EmployeeResponse> employees = employeeService.
@@ -72,6 +80,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/name/{name}")
+    @CacheEvict(value = "employees", allEntries = true)
+    @CachePut("employees")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstname(@PathVariable("name") String name,
                                                                             @AuthenticationPrincipal User authenticatedUser) {
         Page<EmployeeResponse> employees = employeeService
@@ -80,6 +90,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/name/{name}/page/{page}")
+    @CacheEvict(value = "employees", allEntries = true)
+    @CachePut("employees")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByFirstnamePerPage(@PathVariable("name") String name,
                                                                                    @PathVariable("page") int page,
                                                                                    @AuthenticationPrincipal User authenticatedUser) {
@@ -89,16 +101,22 @@ public class EmployeeController {
     }
 
     @GetMapping("/quantity")
+    @CacheEvict(value = "quantity", allEntries = true)
+    @CachePut("quantity")
     public ResponseEntity<Integer> getEmployeeQuantityByUser(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(employeeService.getEmployeeQuantityByUser(authenticatedUser.getId()));
     }
 
     @GetMapping("/position")
+    @CacheEvict(value = "position", allEntries = true)
+    @CachePut("position")
     public ResponseEntity<List<PositionResponse>> getAllPosition() {
         return ResponseEntity.ok(employeeService.getAllPosition());
     }
 
     @GetMapping("/mission/{missionId}/page/{page}")
+    @CacheEvict(value = "employeeWithMission", allEntries = true)
+    @CachePut("employeeWithMission")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeByMissionId(@PathVariable("missionId") Long missionId,
                                                                             @AuthenticationPrincipal User authenticatedUser,
                                                                             @PathVariable("page") int page) {
@@ -106,6 +124,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/missionId/{missionId}/page/{page}")
+    @CacheEvict(value = "employeeNoMission", allEntries = true)
+    @CachePut("employeeNoMission")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployeeWithoutThatMission(@PathVariable("missionId") Long missionId,
                                                                                    @AuthenticationPrincipal User authenticatedUser,
                                                                                    @PathVariable("page") int page) {

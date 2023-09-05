@@ -9,6 +9,8 @@ import com.bbm.employeeservice.model.dto.StatusResponse;
 import com.bbm.employeeservice.service.MissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,8 @@ public class MissionController {
     }
 
     @GetMapping("/page/{page}")
+    @CacheEvict(value = "missions", allEntries = true)
+    @CachePut("missions")
     public ResponseEntity<Page<MissionResponse>> getAllMission(@PathVariable("page") int page,
                                                                @AuthenticationPrincipal User authenticatedUser) {
         Page<MissionResponse> missions = missionService.getAllMission(page, authenticatedUser.getId());
@@ -39,6 +43,8 @@ public class MissionController {
     }
 
     @GetMapping("/name/{name}/page/{page}")
+    @CacheEvict(value = "missions", allEntries = true)
+    @CachePut("missions")
     public ResponseEntity<Page<MissionResponse>> getAllMissionByName(@PathVariable("name") String name,
                                                                      @PathVariable("page") int page,
                                                                      @AuthenticationPrincipal User authenticatedUser) {
@@ -46,6 +52,8 @@ public class MissionController {
     }
 
     @GetMapping("/employee/{employeeId}/page/{page}")
+    @CacheEvict(value = "missionWithEmployee", allEntries = true)
+    @CachePut("missionWithEmployee")
     public ResponseEntity<Page<MissionResponse>> getAllMissionByEmployeeId(@PathVariable("employeeId") Long emplooyeeId,
                                                                            @PathVariable("page") int page,
                                                                            @AuthenticationPrincipal User authenticatedUser) {
@@ -60,11 +68,15 @@ public class MissionController {
     }
 
     @GetMapping("/status")
+    @CacheEvict(value = "status", allEntries = true)
+    @CachePut("status")
     public ResponseEntity<List<StatusResponse>> getAllStatus() {
         return ResponseEntity.ok(missionService.getAllStatus());
     }
 
     @GetMapping("/quantity")
+    @CacheEvict(value = "quantity", allEntries = true)
+    @CachePut("quantity")
     public ResponseEntity<Integer> getMissionByUserId(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(missionService.getMissionQuantityByUser(authenticatedUser.getId()));
     }
