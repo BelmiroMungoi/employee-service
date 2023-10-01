@@ -98,6 +98,6 @@ public class MissionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMission(@PathVariable Long id, @AuthenticationPrincipal User authenticatedUser) {
         missionService.deleteMission(id, authenticatedUser.getId());
-        return new ResponseEntity<>("Missão com o ID: " + id + " foi deletada", HttpStatus.OK);
+        return new ResponseEntity<>("Missão com o ID: " + id + " foi deletada com sucesso!", HttpStatus.OK);
     }
 }
