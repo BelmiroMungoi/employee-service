@@ -115,6 +115,7 @@ public class AuthenticationService {
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
+                        .user(maptoUserResponse(user))
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
