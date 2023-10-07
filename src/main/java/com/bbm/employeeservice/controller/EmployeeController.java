@@ -32,9 +32,8 @@ public class EmployeeController {
 
     @PostMapping("/")
     public ResponseEntity<AppResponse> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest,
-                                                      @AuthenticationPrincipal User authenticatedUser,
-                                                      @RequestParam(value = "file", required = false) MultipartFile file) {
-        var employee = employeeService.createEmployee(employeeRequest, file, authenticatedUser.getId());
+                                                      @AuthenticationPrincipal User authenticatedUser) {
+        var employee = employeeService.createEmployee(employeeRequest, authenticatedUser.getId());
         return new ResponseEntity<>(employee, HttpStatus.CREATED);
     }
 

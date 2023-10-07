@@ -44,7 +44,7 @@ public class EmployeeService {
     private final JdbcTemplate jdbcTemplate;
     private final ResourceLoader resourceLoader;
 
-    public AppResponse createEmployee(EmployeeRequest employeeRequest, MultipartFile file, Long userId) {
+    public AppResponse createEmployee(EmployeeRequest employeeRequest, Long userId) {
         if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
             throw new BusinessException("Já existe um funcionário registrado com esse Email");
         }
