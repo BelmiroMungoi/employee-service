@@ -5,7 +5,6 @@ import com.bbm.employeeservice.model.dto.AuthenticateRequest;
 import com.bbm.employeeservice.model.dto.AuthenticationResponse;
 import com.bbm.employeeservice.model.dto.RegisterRequest;
 import com.bbm.employeeservice.service.AuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,8 +42,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/refresh-token")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        authenticationService.refreshToken(request, response);
+    @GetMapping(value = "/refresh-token", produces = "application/json")
+    public void refreshToken(@RequestParam("token") String token, HttpServletResponse response) throws IOException {
+        System.out.println("TESTANDO O REFRESH TOKEN");
+        authenticationService.refreshToken(token, response);
     }
 }

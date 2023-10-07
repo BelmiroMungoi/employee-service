@@ -12,10 +12,8 @@ import com.bbm.employeeservice.repository.ConfirmationTokenRepository;
 import com.bbm.employeeservice.repository.DepartmentRepository;
 import com.bbm.employeeservice.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -99,25 +97,25 @@ public class AuthenticationService {
                 .build();
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    public void refreshToken(String token, HttpServletResponse response) throws IOException {
+        //final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        /*if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return;
         }
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtTokenService.extractUserEmail(refreshToken);
+        refreshToken = authHeader.substring(7);*/
+        userEmail = jwtTokenService.extractUserEmail(token);
         if (userEmail != null) {
             var user = this.userRepository.findByEmail(userEmail).orElseThrow();
-            if (jwtTokenService.isTokenValid(refreshToken, user)) {
+            if (jwtTokenService.isTokenValid(token, user)) {
                 var accessToken = jwtTokenService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
                         .user(maptoUserResponse(user))
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(token)
                         .build();
                 new ObjectMapper().writeValue(
                         response.getOutputStream(), authResponse
