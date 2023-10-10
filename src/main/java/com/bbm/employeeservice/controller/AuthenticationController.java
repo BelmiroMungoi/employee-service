@@ -44,7 +44,6 @@ public class AuthenticationController {
 
     @GetMapping(value = "/refresh-token", produces = "application/json")
     public void refreshToken(@RequestParam("token") String token, HttpServletResponse response) throws IOException {
-        System.out.println("TESTANDO O REFRESH TOKEN");
         authenticationService.refreshToken(token, response);
     }
 }
