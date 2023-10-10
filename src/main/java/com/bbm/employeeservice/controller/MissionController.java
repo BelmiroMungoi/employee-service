@@ -2,10 +2,7 @@ package com.bbm.employeeservice.controller;
 
 import com.bbm.employeeservice.model.Mission;
 import com.bbm.employeeservice.model.User;
-import com.bbm.employeeservice.model.dto.AppResponse;
-import com.bbm.employeeservice.model.dto.MissionRequest;
-import com.bbm.employeeservice.model.dto.MissionResponse;
-import com.bbm.employeeservice.model.dto.StatusResponse;
+import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.service.MissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +76,11 @@ public class MissionController {
     @CachePut("quantity")
     public ResponseEntity<Integer> getMissionByUserId(@AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(missionService.getMissionQuantityByUser(authenticatedUser.getId()));
+    }
+
+    @GetMapping("/statusChart")
+    public ResponseEntity<StatusChartResponse> missionStatusChart(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(missionService.missionStatusChart(authenticatedUser.getId()));
     }
 
     @PutMapping("/{id}")
