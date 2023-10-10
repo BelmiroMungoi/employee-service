@@ -6,10 +6,7 @@ import com.bbm.employeeservice.model.Employee;
 import com.bbm.employeeservice.model.Mission;
 import com.bbm.employeeservice.model.MissionStatus;
 import com.bbm.employeeservice.model.User;
-import com.bbm.employeeservice.model.dto.AppResponse;
-import com.bbm.employeeservice.model.dto.MissionRequest;
-import com.bbm.employeeservice.model.dto.MissionResponse;
-import com.bbm.employeeservice.model.dto.StatusResponse;
+import com.bbm.employeeservice.model.dto.*;
 import com.bbm.employeeservice.repository.EmployeeRepository;
 import com.bbm.employeeservice.repository.MissionRepository;
 import com.bbm.employeeservice.repository.MissionStatusRepository;
@@ -128,6 +125,16 @@ public class MissionService {
                 .responseMessage("Funcionário foi alocado para o projecto com sucesso!")
                 .name(employee.getFirstname() + " " + employee.getLastname())
                 .build();
+    }
+
+    public StatusChartResponse missionStatusChart(Long userId) {
+        StatusChartResponse chartResponse = new StatusChartResponse();
+        chartResponse.setOpen(missionRepository.countAllOPenMissionByUserId(userId));
+        chartResponse.setPendent(missionRepository.countAllPendentMissionByUserId(userId));
+        chartResponse.setCanceled(missionRepository.countAllCanceledMissionByUserId(userId));
+        chartResponse.setClosed(missionRepository.countAllClosedMissionByUserId(userId));
+
+        return chartResponse;
     }
 
     public MissionResponse mapToMissionResponse(Mission mission) {
