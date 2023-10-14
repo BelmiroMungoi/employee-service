@@ -31,6 +31,9 @@ public class MissionService {
 
     public AppResponse createMission(MissionRequest request, Long userId) {
         User user = new User(userId);
+        if (missionRepository.existsByMissionNameAndUserId(request.getMissionName(), userId)) {
+            throw new BusinessException("Já existe uma missão com esse nome");
+        }
         MissionStatus status = missionStatusRepository.findByStatus(request.getMissionStatus());
         Mission mission = Mission.builder()
                 .missionName(request.getMissionName())
