@@ -24,12 +24,18 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
     Page<Mission> findAllByEmployeeAndUserId(PageRequest pageRequest, Long employeeId, Long userId);
 
     Integer countMissionByUserId(Long userId);
+
     @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM mission WHERE status_id = 1 AND user_id = :userId")
     Integer countAllOPenMissionByUserId(Long userId);
+
     @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM mission WHERE status_id = 2 AND user_id = :userId")
     Integer countAllPendentMissionByUserId(Long userId);
+
     @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM mission WHERE status_id = 3 AND user_id = :userId")
     Integer countAllCanceledMissionByUserId(Long userId);
+
     @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM mission WHERE status_id = 4 AND user_id = :userId")
     Integer countAllClosedMissionByUserId(Long userId);
+
+    boolean existsByMissionNameAndUserId(String name, Long userId);
 }
