@@ -6,6 +6,7 @@ import com.bbm.employeeservice.model.dto.AuthenticationResponse;
 import com.bbm.employeeservice.model.dto.RegisterRequest;
 import com.bbm.employeeservice.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AppResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AppResponse> register(@Valid @RequestBody RegisterRequest request) {
         var registry = authenticationService.register(request);
         return new ResponseEntity<>(registry, HttpStatus.CREATED);
     }
