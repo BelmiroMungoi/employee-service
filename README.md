@@ -25,6 +25,6 @@ An REST API designed to simplify HR operations. With a user-friendly interface, 
 
 You're welcome to contribute in the project. Feel free to fork this repository, submit issues, or open pull requests to help improve the Employee Service.
 
-License:
+## License:
 
 This project is licensed under the [Apache-2.0 License](http://www.apache.org/licenses/).
